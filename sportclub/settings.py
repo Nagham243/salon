@@ -95,14 +95,10 @@ ASGI_APPLICATION = "sportclub.asgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'salon',
-        'USER': 'nagham',
-        'PASSWORD': '12345',
-        'HOST': 'localhost',  # or your DB server
-        'PORT': '5432',        # default Postgres port
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600
+    )
 }
 
 
