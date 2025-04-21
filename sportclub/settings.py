@@ -29,7 +29,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-6b1mw+^bk3)_5hys8=%1b-#8j+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = [
+    'web-production-de936.up.railway.app',
+    'localhost',
+    '127.0.0.1',
+]
 
 
 
