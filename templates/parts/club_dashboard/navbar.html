@@ -1,0 +1,139 @@
+{% load static %}
+{% load messenger_tags %}
+{% block content %}
+
+<!-- Mobile menu button -->
+<button class="fixed right-0 top-0 z-50 m-4 text-indigo-800 transition-transform duration-200 ease-in-out hover:scale-110 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 xl:hidden" onclick="toggleSidebar()">
+  <span id="menuIcon" class="h-6 w-6">
+    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+    </svg>
+  </span>
+  <span id="closeIcon" class="h-6 w-6 hidden">
+    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </span>
+</button>
+
+<!-- Sidebar -->
+<div id="sidebar" class="fixed inset-y-0 right-0 z-40 flex w-64 flex-col justify-between rounded-l-lg bg-white transition-transform duration-300 ease-in-out translate-x-full xl:translate-x-0">
+  
+  <!-- Logo & Notification -->
+  <div class="py-6 border-b border-gray-100 relative flex flex-col items-center">
+    <!-- Club Logo -->
+    <img class="h-16 w-16 rounded-full" src="data:image/jpeg;base64,{{ club.club_profile_image_base64|safe }}" alt="Club Logo">
+
+    <!-- Space between Logo & Icon -->
+    <div class="h-4"></div>
+
+    <!-- Notification Bell -->
+    <div class="relative">
+      <a href="{% url 'viewClubNotifications' %}">
+        <svg class="w-8 h-8 text-yellow-500 drop-shadow-md hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="yellow" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C10.34 2 9 3.34 9 5V6C6.24 6 4 8.24 4 11V16L2 18V19H22V18L20 16V11C20 8.24 17.76 6 15 6V5C15 3.34 13.66 2 12 2ZM12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22Z"/>
+        </svg>
+        {% if unread_count > 0 %}
+        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-2">
+          {{ unread_count }}
+        </span>
+        {% endif %}
+      </a>
+    </div>
+
+    <div class="h-6"></div>
+  </div>
+
+  <!-- Scrollable Navigation Links -->
+  <div class="flex-1 overflow-y-auto px-4 mt-6 space-y-3 custom-scrollbar">
+    <nav class="flex flex-col space-y-3">
+      <a href="/club_dashboard" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">الرئيسية</a>
+
+      <a href="{% url 'club_orders' %}" class="flex items-center p-2 text-gray-600 rounded-lg hover:bg-gray-100 group relative">
+        <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-indigo-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path>
+        </svg>
+        <span class="mr-3 flex-1 whitespace-nowrap text-right">الطلبات</span>
+
+        <!-- Pending Orders Badge -->
+        {% with pending_orders_count=pending_orders_count|default:0 %}
+        {% if pending_orders_count > 0 %}
+        <span class="inline-flex items-center justify-center w-5 h-5 mr-2 text-xs font-semibold text-white bg-red-500 rounded-full">
+        {{ pending_orders_count }}
+    </span>
+        {% endif %}
+        {% endwith %}
+      </a>
+
+      <a href="/club_dashboard/viewStudents" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">العملاء</a>
+
+      <a href="/club_dashboard/viewReceptionists" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">موظفين الاستقبال</a>
+
+      <a href="{% url 'club_salon_appointments' %}" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">مواعيد الصالون</a>
+
+      <a href="{% url 'viewArticles' %}" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">الأخبار</a>
+
+      <a href="{% url 'viewProducts' %}" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">المنتجات</a>
+
+      <a href="/club_dashboard/viewServices" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">العروض</a>
+
+      <a href="{% url 'reviews_list' %}" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">التقييمات</a>
+
+      <a href="{% url 'viewClubNotifications' %}" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">الإشعارات</a>
+
+      {% get_user_club request.user.id as stu_club %}
+      <a href="{% url 'messageRoom' stu_club.id %}" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">الدردشة الجماعية</a>
+
+      <a href="{% url 'Profile' request.user.userprofile.director_profile.club.id %}?is_club=1" class="group flex items-center rounded-md px-4 py-3 text-sm font-medium text-black hover:bg-indigo-100 hover:text-indigo-800">ملف الصالون</a>
+    </nav>
+  </div>
+
+  <!-- Logout Button -->
+  <div class="mt-auto p-6">
+    <a href="{% url 'signout' %}" class="text-red-500 hover:text-red-700 transition-all block text-center">
+      تسجيل خروج
+    </a>
+  </div>
+
+</div>
+
+<!-- Custom Scrollbar Style -->
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e0;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+  }
+</style>
+
+<!-- Sidebar Toggle Script -->
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const menuIcon = document.getElementById("menuIcon");
+    const closeIcon = document.getElementById("closeIcon");
+
+    if (sidebar.classList.contains("translate-x-full")) {
+      sidebar.classList.remove("translate-x-full");
+      menuIcon.classList.add("hidden");
+      closeIcon.classList.remove("hidden");
+    } else {
+      sidebar.classList.add("translate-x-full");
+      menuIcon.classList.remove("hidden");
+      closeIcon.classList.add("hidden");
+    }
+  }
+</script>
+
+{% endblock %}

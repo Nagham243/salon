@@ -1,0 +1,73 @@
+{% extends "base_club_dashboard.html" %} {% block content %}
+<section class="bg-indigo-50 w-full min-h-screen p-4 py-8 md:p-8">
+    <div class="max-w-6xl mx-auto md:pr-[20%]">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-indigo-800">قائمة المقالات</h1>
+            <a
+                    href="{% url 'addArticle' %}"
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
+            >إضافة مقال جديد</a
+            >
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+            <div class="p-4 bg-gray-50 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-700">إحصائيات المدونة</h2>
+            </div>
+            <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-indigo-600">{{ total_articles }}</p>
+                    <p class="text-gray-600">إجمالي المقالات</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-green-600">{{ new_articles_this_month }}</p>
+                    <p class="text-gray-600">مقالات جديدة هذا الشهر</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-2xl font-bold text-yellow-600">{{ popular_articles }}</p>
+                    <p class="text-gray-600">المقالات الأكثر شعبية</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for art in arts %}
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <img
+                        src="{% if art.img %}{{art.img.url}}{% endif %}"
+                        alt="مقال 1"
+                        class="w-full h-48 object-cover"
+                />
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">
+                        {{art.title}}
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">
+                        {{art.desc}}
+                    </p>
+                    <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-500">
+              <i class="fas fa-calendar mr-2"></i>{{art.creation_date|date:'Y-m-d'}}
+            </span>
+                        <div class="space-x-2 rtl:space-x-reverse">
+                            <a
+                                    href="{% url 'editArticle' art.id %}"
+                                    class="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                            >تعديل</a
+                            >
+                            <a
+                                    href="{% url 'DeleteArticle' art.id %}"
+                                    class="text-red-600 hover:text-red-800 text-sm font-medium"
+                            >حذف</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+{% endblock content %}

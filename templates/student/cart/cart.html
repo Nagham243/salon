@@ -1,0 +1,393 @@
+{% extends "base_student_dashboard.html" %} {% load students_tags %} {% load static %}
+{% block content %}
+
+<div class="bg-blue-50 min-h-screen py-8">
+    <div class="max-w-5xl mx-auto px-4">
+        <!-- Breadcrumbs -->
+        <div class="flex items-center mb-6 text-gray-600">
+            <a href="{% url 'studentIndex' %}" class="hover:text-indigo-600">الرئيسية</a>
+            <span class="mx-2">/</span>
+            <span class="text-indigo-600">سلة التسوق</span>
+        </div>
+
+        <h1 class="text-3xl font-bold text-indigo-800 mb-8 text-right">سلة التسوق</h1>
+
+        {% if product_items or service_items %}
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Cart Items -->
+            <div class="lg:w-2/3 mb-24">
+                <!-- Products Section -->
+                {% if product_items %}
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-right">المنتجات ({{ product_items|length }})</h2>
+
+                    <div class="flex flex-col space-y-4">
+                        {% for item in product_items %}
+                        <div id="product-item-{{ item.id }}" class="flex flex-col md:flex-row border-b pb-4 last:border-0">
+                            <!-- Product Image -->
+                            <div class="md:w-1/4 mb-4 md:mb-0">
+                                {% if item.product.product_images.all %}
+                                <img
+                                        src="{{ item.product.product_images.first.img.url }}"
+                                        alt="{{ item.product.title }}"
+                                        class="w-full h-24 object-contain rounded-md"
+                                >
+                                {% else %}
+                                <div class="h-24 w-full bg-gray-200 flex items-center justify-center rounded-md">
+                                    <span class="text-gray-400"><i class="bi bi-image text-2xl"></i></span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Product Details -->
+                            <div class="md:w-3/4 md:pr-4 flex flex-col justify-between">
+                                <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
+                                    <div class="text-right">
+                                        <h3 class="font-semibold text-lg">{{ item.product.title }}</h3>
+                                        <p class="text-gray-500 text-sm">{{ item.product.price }} ر.س</p>
+                                    </div>
+
+                                    <!-- Quantity Control -->
+                                    <div class="flex items-center">
+                                        <button
+                                                class="update-cart-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-l-md hover:bg-gray-300"
+                                                data-id="{{ item.id }}"
+                                                data-action="decrease"
+                                                data-type="product"
+                                        >
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span class="px-4 py-1 bg-gray-100 text-center product-quantity" data-id="{{ item.id }}">{{ item.quantity }}</span>
+                                        <button
+                                                class="update-cart-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-r-md hover:bg-gray-300"
+                                                data-id="{{ item.id }}"
+                                                data-action="increase"
+                                                data-type="product"
+                                        >
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between items-center mt-4">
+                                    <button
+                                            class="update-cart-btn text-red-600 hover:text-red-800"
+                                            data-id="{{ item.id }}"
+                                            data-action="remove"
+                                            data-type="product"
+                                    >
+                                        <i class="fas fa-trash-alt mr-1"></i> إزالة
+                                    </button>
+                                    <p class="font-semibold text-lg text-indigo-600 product-total" data-id="{{ item.id }}">{{ item.total_price }} ر.س</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Services Section -->
+                {% if service_items %}
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-right">الخدمات ({{ service_items|length }})</h2>
+
+                    <div class="flex flex-col space-y-4">
+                        {% for item in service_items %}
+                        <div id="service-item-{{ item.id }}" class="flex flex-col md:flex-row border-b pb-4 last:border-0">
+                            <!-- Service Image -->
+                            <div class="md:w-1/4 mb-4 md:mb-0">
+                                {% if item.service.image %}
+                                <img
+                                        src="{{ item.service.image.url }}"
+                                        alt="{{ item.service.title }}"
+                                        class="w-full h-24 object-contain rounded-md"
+                                >
+                                {% else %}
+                                <div class="h-24 w-full bg-gray-200 flex items-center justify-center rounded-md">
+                                    <span class="text-gray-400"><i class="bi bi-image text-2xl"></i></span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Service Details -->
+                            <div class="md:w-3/4 md:pr-4 flex flex-col justify-between">
+                                <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-2 md:space-y-0">
+                                    <div class="text-right">
+                                        <h3 class="font-semibold text-lg">{{ item.service.title }}</h3>
+                                        <p class="text-gray-500 text-sm">{{ item.service.price }} ر.س</p>
+<!--                                        {% if item.service.subscription_days %}-->
+<!--                                        <p class="text-gray-500 text-xs">مدة الاشتراك: {{ item.service.subscription_days }} يوم</p>-->
+<!--                                        {% endif %}-->
+                                    </div>
+
+                                    <div class="mt-2 text-xs text-gray-600 bg-gray-100 p-2 rounded-md">
+                                        <p>مدة الخدمة: {{ item.service.duration }} دقيقة</p>
+                                        <p>تاريخ الحجز: {% now "Y-m-d" %}</p>
+                                        {% if item.appointment_date %}
+                                        <p>تاريخ الموعد: {{ item.appointment_date }}</p>
+                                        {% else %}
+                                        <p class="text-amber-600">سيتم الغاء موعد الخدمة اذا لم يتم الدفع قبل الموعد بيوم</p>
+                                        {% endif %}
+                                    </div>
+<!--                                    &lt;!&ndash; Quantity Control &ndash;&gt;-->
+<!--                                    <div class="flex items-center">-->
+<!--                                        <button-->
+<!--                                                class="update-cart-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-l-md hover:bg-gray-300"-->
+<!--                                                data-id="{{ item.id }}"-->
+<!--                                                data-action="decrease"-->
+<!--                                                data-type="service"-->
+<!--                                        >-->
+<!--                                            <i class="fas fa-minus"></i>-->
+<!--                                        </button>-->
+<!--                                        <span class="px-4 py-1 bg-gray-100 text-center service-quantity" data-id="{{ item.id }}">{{ item.quantity }}</span>-->
+<!--                                        <button-->
+<!--                                                class="update-cart-btn bg-gray-200 text-gray-700 px-3 py-1 rounded-r-md hover:bg-gray-300"-->
+<!--                                                data-id="{{ item.id }}"-->
+<!--                                                data-action="increase"-->
+<!--                                                data-type="service"-->
+<!--                                        >-->
+<!--                                            <i class="fas fa-plus"></i>-->
+<!--                                        </button>-->
+<!--                                    </div>-->
+                                </div>
+
+                                <div class="flex justify-between items-center mt-4">
+<!--                                    <button-->
+<!--                                            class="update-cart-btn text-red-600 hover:text-red-800"-->
+<!--                                            data-id="{{ item.id }}"-->
+<!--                                            data-action="remove"-->
+<!--                                            data-type="service"-->
+<!--                                    >-->
+<!--                                        <i class="fas fa-trash-alt mr-1"></i> إزالة-->
+<!--                                    </button>-->
+                                    <p class="font-semibold text-lg text-indigo-600 service-total" data-id="{{ item.id }}">{{ item.total_price }} ر.س</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Summary -->
+            <div class="lg:w-1/3 mt-6 lg:mt-0 mb-24">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                    <h2 class="text-xl font-semibold mb-4 text-right">ملخص الطلب</h2>
+
+                    <div class="space-y-3 text-right">
+                        {% if product_items %}
+                        <div class="flex justify-between border-b pb-3">
+                            <span class="font-semibold">عدد المنتجات:</span>
+                            <span id="total-products-count">{{ product_items|length }}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-3">
+                            <span class="font-semibold">إجمالي المنتجات:</span>
+                            <span id="total-products-price" class="text-indigo-600">{{ product_total }} ر.س</span>
+                        </div>
+                        {% endif %}
+
+                        {% if service_items %}
+                        <div class="flex justify-between border-b pb-3">
+                            <span class="font-semibold">عدد الخدمات:</span>
+                            <span id="total-services-count">{{ service_items|length }}</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-3">
+                            <span class="font-semibold">إجمالي الخدمات:</span>
+                            <span id="total-services-price" class="text-indigo-600">{{ service_total }} ر.س</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex justify-between border-b pb-3">
+                            <span class="font-semibold">إجمالي السعر:</span>
+                            <span id="total-price" class="text-indigo-600 font-bold">{{ total_price }} ر.س</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <a
+                                href="{% url 'checkout' %}"
+                                class="block w-full bg-indigo-600 text-white text-center py-3 rounded-md hover:bg-indigo-700 transition-colors font-semibold"
+                        >
+                            متابعة عملية الشراء
+                        </a>
+
+                        <div class="flex gap-2 mt-3">
+                            <a
+                                    href="{% url 'StudentViewProducts' %}"
+                                    class="block w-1/2 text-center py-3 text-indigo-600 hover:text-indigo-800 border border-indigo-600 rounded-md"
+                            >
+                                تصفح المنتجات
+                            </a>
+                            <a
+                                    href="{% url 'studentViewServices' %}"
+                                    class="block w-1/2 text-center py-3 text-indigo-600 hover:text-indigo-800 border border-indigo-600 rounded-md"
+                            >
+                                تصفح الخدمات
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Empty Cart -->
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <img src="{% static 'img/empty-cart.svg' %}" alt="Empty Cart" class="mx-auto w-48 mb-4">
+            <h2 class="text-2xl font-semibold mb-2">سلة التسوق فارغة</h2>
+            <p class="text-gray-500 mb-6">ابدأ بإضافة منتجات وخدمات إلى سلة التسوق</p>
+            <div class="flex gap-4 justify-center">
+                <a href="{% url 'StudentViewProducts' %}" class="px-8 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">تصفح المنتجات</a>
+                <a href="{% url 'studentViewServices' %}" class="px-8 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">تصفح الخدمات</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+  // Update cart functionality
+  const updateCartButtons = document.querySelectorAll('.update-cart-btn');
+
+  updateCartButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const itemId = this.dataset.id;
+      const action = this.dataset.action;
+      const itemType = this.dataset.type; // 'product' or 'service'
+
+      let url = '{% url "update_cart" %}';
+      if (itemType === 'service') {
+        url = '{% url "update_service_cart" %}';
+      }
+
+      // Get the current quantity element
+      const quantityClass = itemType === 'product' ? 'product-quantity' : 'service-quantity';
+      const quantityElement = document.querySelector(`.${quantityClass}[data-id="${itemId}"]`);
+      let currentQuantity = parseInt(quantityElement.textContent);
+
+      // Optimistically update the UI for better user experience
+      if (action === 'increase') {
+        currentQuantity += 1;
+        quantityElement.textContent = currentQuantity;
+      } else if (action === 'decrease' && currentQuantity > 1) {
+        currentQuantity -= 1;
+        quantityElement.textContent = currentQuantity;
+      }
+
+      // AJAX request to update cart
+      const formData = new FormData();
+      formData.append('item_id', itemId);
+      formData.append('action', action);
+      formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+      fetch(url, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Update cart count in navbar
+          updateNavbarCartCount(data.cart_count);
+
+          // Handle item removal
+          if (action === 'remove') {
+            const cartItemId = `${itemType}-item-${itemId}`;
+            const cartItem = document.getElementById(cartItemId);
+            cartItem.remove();
+
+            // Update summary - check if elements exist before updating
+            const productCountElement = document.getElementById('total-products-count');
+            const serviceCountElement = document.getElementById('total-services-count');
+            const productPriceElement = document.getElementById('total-products-price');
+            const servicePriceElement = document.getElementById('total-services-price');
+
+            // Update product counts if applicable
+            if (itemType === 'product' && productCountElement) {
+              const remainingProducts = document.querySelectorAll('[id^="product-item-"]').length;
+              productCountElement.textContent = remainingProducts;
+
+              if (remainingProducts === 0 && productPriceElement) {
+                productPriceElement.parentElement.remove();
+              }
+            }
+
+            // Update service counts if applicable
+            if (itemType === 'service' && serviceCountElement) {
+              const remainingServices = document.querySelectorAll('[id^="service-item-"]').length;
+              serviceCountElement.textContent = remainingServices;
+
+              if (remainingServices === 0 && servicePriceElement) {
+                servicePriceElement.parentElement.remove();
+              }
+            }
+
+            // Update total price
+            document.getElementById('total-price').textContent = `${data.total_price} ر.س`;
+
+            // If no items left, reload page to show empty cart
+            const hasProducts = document.querySelectorAll('[id^="product-item-"]').length > 0;
+            const hasServices = document.querySelectorAll('[id^="service-item-"]').length > 0;
+
+            if (!hasProducts && !hasServices) {
+              location.reload();
+            }
+          } else {
+            // Update quantity display with server value (if available)
+            if (data.cart_item_quantity) {
+              quantityElement.textContent = data.cart_item_quantity;
+            }
+
+            // Update item total
+            const totalClass = itemType === 'product' ? 'product-total' : 'service-total';
+            const totalElement = document.querySelector(`.${totalClass}[data-id="${itemId}"]`);
+            if (totalElement && data.item_total) {
+              totalElement.textContent = `${data.item_total} ر.س`;
+            }
+
+            // Update total price
+            document.getElementById('total-price').textContent = `${data.total_price} ر.س`;
+
+            // Update section totals if applicable
+            if (data.product_total && document.getElementById('total-products-price')) {
+              document.getElementById('total-products-price').textContent = `${data.product_total} ر.س`;
+            }
+            if (data.service_total && document.getElementById('total-services-price')) {
+              document.getElementById('total-services-price').textContent = `${data.service_total} ر.س`;
+            }
+          }
+        } else {
+          // Show error message and revert the optimistic update
+          alert(data.message);
+          // Reload the page to get accurate data
+          location.reload();
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Reload the page in case of error
+        location.reload();
+      });
+    });
+  });
+
+  // Function to update cart count in navbar
+  function updateNavbarCartCount(count) {
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+      cartCountElement.textContent = count;
+
+      // Show/hide based on count
+      if (count > 0) {
+        cartCountElement.classList.remove('hidden');
+      } else {
+        cartCountElement.classList.add('hidden');
+      }
+    }
+  }
+});
+</script>
+
+{% endblock %}

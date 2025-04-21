@@ -1,0 +1,67 @@
+{% extends "base_club_dashboard.html" %}
+
+{% block content %}
+<div class="xl:pr-[20%] bg-indigo-50 w-full px-4 md:px-8 min-h-screen pb-12">
+  <div class="flex justify-between items-center py-8">
+    <h1 class="text-4xl font-bold text-indigo-800">قائمة الموظفين</h1>
+    <a
+      href="{% url 'addCoach' %}"
+      class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-300"
+    >
+      إضافة موظف جديد
+    </a>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <table class="w-full text-sm text-right text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">الاسم</th>
+          <th scope="col" class="px-6 py-3">البريد الإلكتروني</th>
+          <th scope="col" class="px-6 py-3">الاسم الكامل</th>
+          <th scope="col" class="px-6 py-3">الهاتف</th>
+<!--          <th scope="col" class="px-6 py-3">الملعب</th>-->
+          <th scope="col" class="px-6 py-3">الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for coach in coach_userprofile %}
+        <tr class="bg-white border-b hover:bg-gray-50">
+          <td class="px-6 py-4 font-medium text-gray-900">
+            {{ coach.user.username }}
+          </td>
+          <td class="px-6 py-4">{{ coach.user.email }}</td>
+          <td class="px-6 py-4">
+            {{ coach.Coach_profile.full_name|default:"❌ غير متوفر" }}
+          </td>
+          <td class="px-6 py-4">
+            {{ coach.Coach_profile.phone|default:"❌ غير متوفر" }}
+          </td>
+<!--          <td class="px-6 py-4">-->
+<!--            {{ coach.Coach_profile.stadium|default:"❌ غير متوفر" }}-->
+<!--          </td>-->
+          <td class="px-6 py-4">
+            {% if coach.Coach_profile %}
+              <a href="{% url 'editCoach' coach.Coach_profile.id %}" class="font-medium text-indigo-600 hover:underline ml-2">
+                تعديل
+              </a>
+              <a href="{% url 'deleteCoach' coach.Coach_profile.id %}" class="font-medium text-red-600 hover:underline">
+                حذف
+              </a>
+            {% else %}
+              <span class="text-gray-400">غير متاح</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr class="bg-white border-b">
+          <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+            🚫 لا يوجد موظفين حالياً
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

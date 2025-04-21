@@ -1,0 +1,273 @@
+{% extends 'base_club_dashboard.html' %} {% block content %}
+<div class="bg-indigo-50 min-h-screen xl:pr-[20%]">
+  <section class="container mx-auto px-4 pt-8 pb-16">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-indigo-800">إدارة المنتجات 📦</h1>
+      <a
+      href="{% url 'addProduct' %}"
+      class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 flex items-center"
+      >
+      <span class="mr-2">+</span> إضافة منتج جديد
+      </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm mb-2">إجمالي المنتجات</h3>
+        <div class="text-4xl font-bold text-indigo-600">{{ total_products }}</div>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm mb-2">القيمة الإجمالية</h3>
+        <div class="text-4xl font-bold text-indigo-600">
+          <span id="total-value">{{ total_value|floatformat:2 }}</span>
+          <span class="text-sm">ر.س</span>
+        </div>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm mb-2">مخزون منخفض</h3>
+        <div class="text-4xl font-bold text-yellow-500">{{ low_stock_count }}</div>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm mb-2">نفذ من المخزون</h3>
+        <div class="text-4xl font-bold text-red-500">{{ out_of_stock_count }}</div>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm mb-2">ينتهي خلال شهر</h3>
+        <div class="text-4xl font-bold text-orange-500">{{ expiring_soon_count }}</div>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm mb-2">منتجات منتهية</h3>
+        <div class="text-4xl font-bold text-red-600">{{ expired_count }}</div>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="relative">
+        <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option>جميع المنتجات</option>
+          <option>متاحة فقط</option>
+          <option>غير متاحة</option>
+          <option>مخزون منخفض</option>
+          <option>ينتهي خلال شهر</option>
+          <option>منتهي الصلاحية</option>
+        </select>
+      </div>
+      <div class="relative">
+        <input
+                id="minPrice"
+                type="number"
+                placeholder="السعر الأدنى"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+      <div class="relative">
+        <input
+                id="maxPrice"
+                type="number"
+                placeholder="السعر الأعلى"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+      <div class="relative">
+        <input
+                id="searchInput"
+                type="text"
+                placeholder="بحث عن منتج..."
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      {% for product in products %}
+      <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full product-card"
+           data-name="{{ product.title|lower }}"
+           data-price="{{ product.price }}"
+           data-status="{% if not product.is_enabled %}unavailable{% elif product.stock == 0 %}out{% elif product.stock <= 10 %}low{% else %}available{% endif %}"
+           data-expiring="{% if product.is_expired %}expired{% elif product.is_expiring_soon %}expiring{% else %}valid{% endif %}">
+        <!-- Make image clickable to go to details page -->
+        <a href="{% url 'product_details' product.id %}" class="h-60 overflow-hidden bg-gray-100 block">
+          {% if product.product_images.all %}
+          <img
+                  src="{{ product.product_images.first.img.url }}?v={{ product.updated_at|date:'U' }}"
+                  alt="{{ product.title }}"
+                  class="w-full h-full object-contain transition-transform duration-300 hover:scale-105 product-image"
+                  data-id="{{ product.id }}"
+          >
+          {% else %}
+          <div class="h-full w-full bg-gray-200 flex items-center justify-center">
+            <span class="text-gray-400"><i class="bi bi-image text-3xl"></i></span>
+          </div>
+          {% endif %}
+        </a>
+        <div class="p-4 flex-grow">
+          <!-- Make title clickable to go to details page -->
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-xl font-bold truncate">
+              <a href="{% url 'product_details' product.id %}" class="hover:text-indigo-600">
+                {{ product.title }}
+              </a>
+            </h2>
+            <div>
+              {% if product.is_enabled %}
+              <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">متاح</span>
+              {% else %}
+              <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs">غير متاح</span>
+              {% endif %}
+
+              {% if product.stock == 0 %}
+              <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs mr-1">نفذ</span>
+              {% elif product.stock <= 10 %}
+              <span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs mr-1">منخفض</span>
+              {% endif %}
+
+              {% if product.is_expired %}
+              <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs mr-1">منتهي الصلاحية</span>
+              {% elif product.is_expiring_soon %}
+              <span class="px-2 py-1 bg-orange-200 text-orange-800 rounded-full text-xs mr-1">ينتهي قريباً</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="mb-4">
+            <p class="text-gray-500 text-sm line-clamp-3">{{ product.desc|truncatechars:100 }}</p>
+          </div>
+          <div class="flex justify-between items-center mb-2">
+            <div>
+              <span class="font-bold text-lg text-indigo-600">{{ product.price }} ر.س</span>
+            </div>
+            <div class="text-gray-600">
+              المخزون: <span class="font-medium">{{ product.stock }}</span>
+            </div>
+          </div>
+          {% if product.expiration_date %}
+          <div class="text-sm text-gray-600">
+            تاريخ انتهاء الصلاحية: <span class="font-medium">{{ product.expiration_date|date:"Y-m-d" }}</span>
+          </div>
+          {% endif %}
+        </div>
+        <div class="bg-gray-50 border-t border-gray-200 px-4 py-3 flex justify-between">
+          <div class="flex space-x-3">
+            <a href="{% url 'product_details' product.id %}" class="text-blue-600 hover:text-blue-800 font-medium ml-2">تفاصيل</a>
+            <a href="{% url 'editProduct' product.id %}" class="text-orange-600 hover:text-orange-800">تعديل</a>
+          </div>
+          <a href="{% url 'DeleteProduct' product.id %}" class="text-red-600 hover:text-red-800 delete-product" data-id="{{ product.id }}">حذف</a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-span-3 p-8 text-center">
+        <p class="text-gray-500 font-medium">لا توجد منتجات متاحة حالياً</p>
+        <a href="{% url 'addProduct' %}" class="mt-4 inline-block px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">إضافة منتج جديد</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if products.has_other_pages %}
+    <div class="flex justify-center mt-8">
+      <div class="inline-flex rounded-md shadow">
+        {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}" class="px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
+          السابق
+        </a>
+        {% endif %}
+
+        {% for i in products.paginator.page_range %}
+        {% if products.number == i %}
+        <span class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-gray-300">{{ i }}</span>
+        {% else %}
+        <a href="?page={{ i }}" class="px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-gray-300 hover:bg-gray-50">{{ i }}</a>
+        {% endif %}
+        {% endfor %}
+
+        {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}" class="px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
+          التالي
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </section>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const productImages = document.querySelectorAll('.product-image');
+    // Removing this code as it's overriding our server-side cache busting
+    /*
+    productImages.forEach(img => {
+        // Extract the current URL and product ID
+        const currentSrc = img.src;
+        const productId = img.getAttribute('data-id');
+
+        // Create a unique timestamp for cache busting
+        const timestamp = new Date().getTime();
+
+        // Update the image source with a forced cache-busting parameter
+        const newSrc = currentSrc.split('?')[0] + '?v=' + timestamp;
+        img.src = newSrc;
+    });
+    */
+});
+
+    // Initialize delete confirmation
+    const deleteButtons = document.querySelectorAll('.delete-product');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productId = this.getAttribute('data-id');
+        if (confirm('هل أنت متأكد من رغبتك في حذف هذا المنتج؟')) {
+          window.location.href = this.getAttribute('href');
+        }
+      });
+    });
+
+    // Filter products
+    const statusFilter = document.getElementById('statusFilter');
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const searchInput = document.getElementById('searchInput');
+    const productCards = document.querySelectorAll('.product-card');
+
+    function filterProducts() {
+      const statusVal = statusFilter.value;
+      const minPrice = parseFloat(minPriceInput.value) || 0;
+      const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
+      const searchQuery = searchInput.value.trim().toLowerCase();
+
+      productCards.forEach(card => {
+        const name = card.dataset.name;
+        const price = parseFloat(card.dataset.price);
+        const status = card.dataset.status;
+        const expiring = card.dataset.expiring;
+
+        const matchStatus =
+          statusVal === 'جميع المنتجات' ||
+          (statusVal === 'متاحة فقط' && status === 'available') ||
+          (statusVal === 'غير متاحة' && status === 'unavailable') ||
+          (statusVal === 'مخزون منخفض' && status === 'low')||
+          (statusVal === 'ينتهي خلال شهر' && expiring === 'expiring') ||
+          (statusVal === 'منتهي الصلاحية' && expiring === 'expired');
+
+        const matchPrice = price >= minPrice && price <= maxPrice;
+        const matchSearch = name.includes(searchQuery);
+
+        if (matchStatus && matchPrice && matchSearch) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    statusFilter.addEventListener('change', filterProducts);
+    minPriceInput.addEventListener('input', filterProducts);
+    maxPriceInput.addEventListener('input', filterProducts);
+    searchInput.addEventListener('input', filterProducts);
+  });
+</script>
+{% endblock %}
+

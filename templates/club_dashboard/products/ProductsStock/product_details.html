@@ -1,0 +1,262 @@
+{% extends 'base_club_dashboard.html' %}
+{% block content %}
+<div class="bg-indigo-50 min-h-screen xl:pr-[20%]">
+    <section class="container mx-auto px-4 pt-8 pb-16">
+        <!-- Header with Navigation -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-indigo-800">تفاصيل المنتج</h1>
+                <h2 class="text-xl text-indigo-600">{{ product.title }}</h2>
+            </div>
+            <div class="flex space-x-4">
+                <a href="{% url 'add_shipment' %}?product_id={{ product.id }}" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center ml-2">
+                    <span class="ml-2">+</span> إضافة شحنة جديدة
+                </a>
+                <a href="{% url 'editProduct' product.id %}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 ">
+                    تعديل المنتج
+                </a>
+                <a href="{% url 'viewProducts' %}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                    العودة للمنتجات
+                </a>
+            </div>
+        </div>
+
+        <!-- Product Info Section -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Product Image Gallery -->
+                    <div class="md:col-span-1">
+                        <div class="bg-gray-100 rounded-lg overflow-hidden mb-4">
+                            {% if product_images %}
+                            <div id="main-image" class="h-64 w-full flex items-center justify-center">
+                                <img src="{{ product_images.0.img.url }}?v={{ product.updated_at|date:'U' }}" alt="{{ product.title }}" class="max-h-full max-w-full object-contain">
+                            </div>
+                            {% if product_images.count > 1 %}
+                            <div class="flex space-x-2 mt-2 overflow-x-auto p-2">
+                                {% for image in product_images %}
+                                <div class="h-16 w-16 flex-shrink-0 rounded-md overflow-hidden border-2 {% if forloop.first %}border-indigo-500{% else %}border-transparent{% endif %} hover:border-indigo-500 cursor-pointer thumbnail-image">
+                                    <img src="{{ image.img.url }}?v={{ product.updated_at|date:'U' }}" alt="{{ product.title }}" class="h-full w-full object-cover" data-full-img="{{ image.img.url }}?v={{ product.updated_at|date:'U' }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <div class="h-64 w-full bg-gray-200 flex items-center justify-center">
+                                <span class="text-gray-400"><i class="bi bi-image text-5xl"></i></span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="md:col-span-2">
+                        <div class="flex justify-between items-start mb-6">
+                            <h3 class="text-2xl font-bold text-gray-800">{{ product.title }}</h3>
+                            <div class="flex flex-wrap">
+                                {% if product.is_enabled %}
+                                <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-xs">متاح</span>
+                                {% else %}
+                                <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs">غير متاح</span>
+                                {% endif %}
+
+                                {% if product.stock == 0 %}
+                                <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs mr-1">نفذ</span>
+                                {% elif product.stock <= 10 %}
+                                <span class="px-2 py-1 bg-yellow-200 text-yellow-800 rounded-full text-xs mr-1">منخفض</span>
+                                {% endif %}
+
+                                {% if product.is_expired %}
+                                <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-xs mr-1">منتهي الصلاحية</span>
+                                {% elif product.is_expiring_soon %}
+                                <span class="px-2 py-1 bg-orange-200 text-orange-800 rounded-full text-xs mr-1">ينتهي قريباً</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <span class="text-gray-500 text-sm">الرمز التعريفي:</span>
+                                <span class="font-medium text-gray-800">{{ product.id }}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 text-sm">السعر:</span>
+                                <span class="font-bold text-indigo-600">{{ product.price }} ر.س</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 text-sm">المخزون الحالي:</span>
+                                <span class="font-medium text-gray-800">{{ product.stock }} وحدة</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-500 text-sm">تاريخ الإنشاء:</span>
+                                <span class="font-medium text-gray-800">{{ product.creation_date|date:"Y-m-d" }}</span>
+                            </div>
+                            {% if product.manufacturing_date %}
+                            <div>
+                                <span class="text-gray-500 text-sm">تاريخ التصنيع:</span>
+                                <span class="font-medium text-gray-800">{{ product.manufacturing_date|date:"Y-m-d" }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.expiration_date %}
+                            <div>
+                                <span class="text-gray-500 text-sm">تاريخ انتهاء الصلاحية:</span>
+                                <span class="font-medium {% if product.is_expired %}text-red-600{% elif product.is_expiring_soon %}text-orange-600{% else %}text-gray-800{% endif %}">
+                  {{ product.expiration_date|date:"Y-m-d" }}
+                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-6">
+                            <h4 class="text-gray-600 font-medium mb-2">الوصف</h4>
+                            <p class="text-gray-700">{{ product.desc }}</p>
+                        </div>
+
+                        {% if product.classification.exists %}
+                        <div>
+                            <h4 class="text-gray-600 font-medium mb-2">التصنيفات</h4>
+                            <div class="flex flex-wrap gap-2">
+                                {% for category in product.classification.all %}
+                                <span class="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm">{{ category.name }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shipments Section -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-gray-800">سجل الشحنات</h3>
+                    <a href="{% url 'add_shipment' %}?product_id={{ product.id }}" class="px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">
+                        إضافة شحنة
+                    </a>
+                </div>
+
+                <!-- Shipment Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-gray-500 text-sm mb-1">إجمالي الشحنات</h3>
+                        <div class="text-xl font-bold text-indigo-600">{{ stats.total_count }}</div>
+                        <div class="text-sm text-gray-500">{{ stats.total_quantity }} وحدة</div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-gray-500 text-sm mb-1">شحنات سليمة</h3>
+                        <div class="text-xl font-bold text-green-600">{{ stats.valid_count }}</div>
+                        <div class="text-sm text-gray-500">{{ stats.valid_quantity }} وحدة</div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-gray-500 text-sm mb-1">تنتهي قريباً</h3>
+                        <div class="text-xl font-bold text-yellow-500">{{ stats.expiring_soon_count }}</div>
+                        <div class="text-sm text-gray-500">{{ stats.expiring_soon_quantity }} وحدة</div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="text-gray-500 text-sm mb-1">منتهية الصلاحية</h3>
+                        <div class="text-xl font-bold text-red-500">{{ stats.expired_count }}</div>
+                        <div class="text-sm text-gray-500">{{ stats.expired_quantity }} وحدة</div>
+                    </div>
+                </div>
+
+                <!-- Shipments Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                تاريخ الإضافة
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                الكمية
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                تاريخ التصنيع
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                تاريخ انتهاء الصلاحية
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                الحالة
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ملاحظات
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                        {% for shipment in shipments %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ shipment.created_at|date:"Y-m-d" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ shipment.quantity }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">{{ shipment.manufacturing_date|default:"غير محدد" }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">{{ shipment.expiration_date|default:"غير محدد" }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if shipment.is_expired %}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    منتهي الصلاحية
+                  </span>
+                                {% elif shipment.is_expiring_soon %}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    ينتهي قريباً
+                  </span>
+                                {% else %}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    سليم
+                  </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ shipment.notes|truncatechars:30|default:"-" }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                لا توجد شحنات متاحة لهذا المنتج
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- JavaScript for image gallery -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const thumbnails = document.querySelectorAll('.thumbnail-image img');
+      const mainImage = document.querySelector('#main-image img');
+
+      if (thumbnails.length > 0 && mainImage) {
+        thumbnails.forEach(thumb => {
+          thumb.addEventListener('click', function() {
+            // Update main image
+            mainImage.src = this.getAttribute('data-full-img');
+
+            // Update active thumbnail
+            document.querySelectorAll('.thumbnail-image').forEach(container => {
+              container.classList.remove('border-indigo-500');
+              container.classList.add('border-transparent');
+            });
+            this.parentElement.classList.remove('border-transparent');
+            this.parentElement.classList.add('border-indigo-500');
+          });
+        });
+      }
+    });
+</script>
+{% endblock %}

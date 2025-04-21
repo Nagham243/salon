@@ -1,0 +1,362 @@
+{% extends "base_landing.html" %}
+
+{% block content %}
+<div class="flex min-h-screen bg-indigo-50">
+  <div class="flex flex-1 flex-col justify-center px-4 py-28 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+    <div class="mx-auto w-full max-w-sm lg:w-96">
+      <h2 class="mt-6 text-3xl font-extrabold text-black">انشاء حساب جديد</h2>
+      <p class="mt-2 text-sm text-indigo-400">
+        عندك حساب؟
+        <a href="/auth/signin" class="font-medium text-indigo-400 hover:text-indigo-300">سجل الدخول</a>
+      </p>
+
+<!--      &lt;!&ndash; Display Django Messages &ndash;&gt;-->
+<!--      {% if messages %}-->
+<!--      <div class="mt-4">-->
+<!--        {% for message in messages %}-->
+<!--          <div class="p-2 text-white text-center rounded-md {% if message.tags == 'success' %} bg-green-500 {% else %} bg-red-500 {% endif %}">-->
+<!--            {{ message }}-->
+<!--          </div>-->
+<!--        {% endfor %}-->
+<!--      </div>-->
+<!--      {% endif %}-->
+
+      <div class="mt-8">
+        <!-- Tab Navigation -->
+        <!-- Tab Navigation -->
+        <div class="flex justify-center mb-4">
+          <div class="flex space-x-4 mb-4">
+            <button id="student-tab" class="tab-btn active-tab">تسجيل عميل</button>
+            <button id="club-tab" class="tab-btn">تسجيل صالون</button>
+          </div>
+        </div>
+
+        <!-- Student Form -->
+        <div id="student-form" class="tab-content">
+          <form class="space-y-6" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="account_type" value="3">
+            
+            <div>
+              <label for="username" class="block text-sm font-medium text-black">اسم المستخدم</label>
+              <div class="mt-1">
+                <input id="username" name="username" type="text" required class="input-style" />
+              </div>
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-medium text-black">البريد الالكتروني</label>
+              <div class="mt-1">
+                <input id="email" name="email" type="email" required class="input-style" />
+              </div>
+            </div>
+
+            {{ student_form.as_p }}
+
+            <div>
+              <label for="password" class="block text-sm font-medium text-black">كلمة المرور</label>
+              <div class="mt-1">
+                <input id="password" name="password" type="password" required class="input-style" />
+              </div>
+            </div>
+
+            <div>
+              <button type="submit" class="submit-btn">انشاء حساب عميل</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Club Form (Director Sign-Up) -->
+        <div id="club-form" class="tab-content hidden">
+          <form class="space-y-6" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="account_type" value="2">
+
+            <h3>معلومات المستخدم</h3>
+            <div>
+              <label for="username" class="block text-sm font-medium text-black">اسم المستخدم</label>
+              <div class="mt-1">
+                <input id="username" name="username" type="text" required class="input-style" />
+              </div>
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-medium text-black">البريد الالكتروني</label>
+              <div class="mt-1">
+                <input id="email" name="email" type="email" required class="input-style" />
+              </div>
+            </div>
+            <div>
+              <label for="password" class="block text-sm font-medium text-black">كلمة المرور</label>
+              <div class="mt-1">
+                <input id="password" name="password" type="password" required class="input-style" />
+              </div>
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-medium text-black">رقم الهاتف</label>
+              <div class="mt-1">
+                <input id="phone" name="phone" type="text" required class="input-style" />
+              </div>
+            </div>
+
+            <h3>معلومات الصالون</h3>
+            <div>
+              <label for="club_name" class="block text-sm font-medium text-black">اسم الصالون</label>
+              <div class="mt-1">
+                <input id="club_name" name="club_name" type="text" required class="input-style" />
+              </div>
+            </div>
+            <div>
+              <label for="city" class="block text-sm font-medium text-black">المدينة</label>
+                <div class="mt-1">
+                  {% if director_form.city %}
+                    {{ director_form.city }}
+                  {% else %}
+                    <p class="text-red-500 text-sm">⚠️ خطأ: لم يتم تحميل حقل المدينة بشكل صحيح.</p>
+                  {% endif %}	
+                </div>
+            </div>
+            <div>
+              <label for="street" class="block text-sm font-medium text-black">الشارع</label>
+              <div class="mt-1">
+                <input id="street" name="street" type="text" required class="input-style" />
+              </div>
+            </div>
+            <div>
+              <label for="desc" class="block text-sm font-medium text-black">وصف قصير</label>
+              <div class="mt-1">
+                <textarea id="desc" name="desc" rows="2" class="input-style"></textarea>
+              </div>
+            </div>
+            <div>
+              <label for="about" class="block text-sm font-medium text-black">عن الصالون</label>
+              <div class="mt-1">
+                <textarea id="about" name="about" rows="3" class="input-style"></textarea>
+              </div>
+            </div>
+            <div>
+              <label for="club_logo" class="block text-sm font-medium text-black">شعار الصالون</label>
+              <div class="mt-1">
+                <input id="club_logo" name="club_profile_image_base64" type="file" class="input-style" />
+              </div>
+            </div>
+            <div>
+              <button type="submit" class="submit-btn">إنشاء حساب صالون</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- receptionist form -->
+<!--        <div id="receptionist-form" class="tab-content hidden">-->
+<!--          <form class="space-y-6" method="post">-->
+<!--            {% csrf_token %}-->
+<!--            <input type="hidden" name="account_type" value="5">-->
+
+<!--            <div>-->
+<!--              <label for="username" class="block text-sm font-medium text-black">اسم المستخدم</label>-->
+<!--              <div class="mt-1">-->
+<!--                {{ receptionist_form.username }}-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--              <label for="email" class="block text-sm font-medium text-black">البريد الالكتروني</label>-->
+<!--              <div class="mt-1">-->
+<!--                {{ receptionist_form.email }}-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--              <label for="password" class="block text-sm font-medium text-black">كلمة المرور</label>-->
+<!--              <div class="mt-1">-->
+<!--                {{ receptionist_form.password }}-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--              <label for="full_name" class="block text-sm font-medium text-black">الاسم الكامل</label>-->
+<!--              <div class="mt-1">-->
+<!--                {{ receptionist_form.full_name }}-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--              <label for="phone" class="block text-sm font-medium text-black">رقم الهاتف</label>-->
+<!--              <div class="mt-1">-->
+<!--                {{ receptionist_form.phone }}-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--              <label for="club" class="block text-sm font-medium text-black">الصالون</label>-->
+<!--              <div class="mt-1">-->
+<!--                {{ receptionist_form.club }}-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--              <label for="about" class="block text-sm font-medium text-black">معلومات إضافية</label>-->
+<!--              <div class="mt-1">-->
+<!--                {{ receptionist_form.about }}-->
+<!--              </div>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--              <button type="submit" class="submit-btn">إنشاء حساب موظف استقبال</button>-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const studentTab = document.getElementById("student-tab");
+    const clubTab = document.getElementById("club-tab");
+    const studentForm = document.getElementById("student-form");
+    const clubForm = document.getElementById("club-form");
+
+    // Function to handle tab switching
+    function switchTab(activeTab, inactiveTab, activeForm, inactiveForm) {
+      // Update tab classes
+      activeTab.classList.add("active-tab");
+      inactiveTab.classList.remove("active-tab");
+
+      // Show/hide forms
+      activeForm.classList.remove("hidden");
+      inactiveForm.classList.add("hidden");
+
+      console.log(`Switched to ${activeTab.id === "student-tab" ? "Student" : "Club"} Form`);
+    }
+
+    // Event listeners for tabs
+    studentTab.addEventListener("click", function() {
+      switchTab(studentTab, clubTab, studentForm, clubForm);
+    });
+
+    clubTab.addEventListener("click", function() {
+      switchTab(clubTab, studentTab, clubForm, studentForm);
+    });
+
+    // Ensure correct form is visible on page load
+    if (studentTab.classList.contains("active-tab")) {
+      studentForm.classList.remove("hidden");
+      clubForm.classList.add("hidden");
+    } else if (clubTab.classList.contains("active-tab")) {
+      clubForm.classList.remove("hidden");
+      studentForm.classList.add("hidden");
+    }
+  });
+</script>
+
+<style>
+  /* Modern tab design */
+  .flex.justify-center.mb-4 {
+    margin-bottom: 2rem;
+  }
+
+  .flex.space-x-4.mb-4 {
+    display: flex;
+    gap: 0;
+    background-color: #e9eeff;
+    border-radius: 9999px;
+    padding: 4px;
+    width: fit-content;
+    margin: 0 auto;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .tab-btn {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 9999px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    color: #6b7280;
+    width: 140px;
+    text-align: center;
+  }
+
+  .active-tab {
+    background-color: #4f46e5;
+    color: white;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+  }
+
+  /* Form styling */
+  .tab-content.hidden {
+    display: none;
+  }
+
+  .input-style {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border 0.3s ease;
+    background-color: white;
+  }
+
+  .input-style:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+  }
+
+  .submit-btn {
+    background-color: #4f46e5;
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+  }
+
+  .submit-btn:hover {
+    background-color: #4338ca;
+  }
+
+  /* Form containers */
+  .space-y-6 {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Form section titles */
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #111827;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  /* Labels */
+  .block.text-sm.font-medium.text-black {
+    margin-bottom: 0.25rem;
+    display: block;
+    color: #374151;
+  }
+
+  /* Better spacing between form elements */
+  .mt-1 {
+    margin-top: 0.25rem;
+    margin-bottom: 1rem;
+  }
+</style>
+
+{% endblock %}

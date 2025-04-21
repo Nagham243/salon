@@ -1,0 +1,120 @@
+{% extends 'base_club_dashboard.html' %}
+{% block content %}
+<div class="bg-indigo-50 min-h-screen xl:pr-[20%]">
+    <section class="container mx-auto px-4 pt-8 pb-16">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-indigo-800">شحنات المنتج</h1>
+                <h2 class="text-xl text-indigo-600">{{ product.title }}</h2>
+            </div>
+            <div class="flex space-x-4">
+                <a href="{% url 'add_shipment' %}?product_id={{ product.id }}" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center ml-2">
+                    <span class="mr-2">+</span> إضافة شحنة جديدة
+                </a>
+                <a href="{% url 'viewProducts' %}" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                    العودة للمنتجات
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-gray-500 text-sm mb-2">إجمالي الشحنات</h3>
+                <div class="text-3xl font-bold text-indigo-600">{{ stats.total_count }}</div>
+                <div class="text-lg text-gray-500">{{ stats.total_quantity }} وحدة</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-gray-500 text-sm mb-2">شحنات سليمة</h3>
+                <div class="text-3xl font-bold text-green-600">{{ stats.valid_count }}</div>
+                <div class="text-lg text-gray-500">{{ stats.valid_quantity }} وحدة</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-gray-500 text-sm mb-2">تنتهي قريباً</h3>
+                <div class="text-3xl font-bold text-yellow-500">{{ stats.expiring_soon_count }}</div>
+                <div class="text-lg text-gray-500">{{ stats.expiring_soon_quantity }} وحدة</div>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-gray-500 text-sm mb-2">منتهية الصلاحية</h3>
+                <div class="text-3xl font-bold text-red-500">{{ stats.expired_count }}</div>
+                <div class="text-lg text-gray-500">{{ stats.expired_quantity }} وحدة</div>
+            </div>
+        </div>
+
+        <!-- Shipments Table -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+            <div class="p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">سجل الشحنات</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                تاريخ الإضافة
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                الكمية
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                تاريخ التصنيع
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                تاريخ انتهاء الصلاحية
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                الحالة
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                ملاحظات
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                        {% for shipment in shipments %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ shipment.created_at|date:"Y-m-d" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ shipment.quantity }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">{{ shipment.manufacturing_date|default:"غير محدد" }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-500">{{ shipment.expiration_date|default:"غير محدد" }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if shipment.is_expired %}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                    منتهي الصلاحية
+                  </span>
+                                {% elif shipment.is_expiring_soon %}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                    ينتهي قريباً
+                  </span>
+                                {% else %}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    سليم
+                  </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ shipment.notes|truncatechars:30|default:"-" }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                لا توجد شحنات متاحة لهذا المنتج
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

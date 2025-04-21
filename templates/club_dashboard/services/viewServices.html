@@ -1,0 +1,212 @@
+{% extends 'base_club_dashboard.html' %}
+{% load custom_filters %}
+{% block content %}
+<div class="bg-indigo-50 min-h-screen xl:pr-[20%]">
+  <section class="container mx-auto px-4 pt-8">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-indigo-800">إدارة الخدمات 💼</h1>
+      <a
+              href="{% url 'addServices' %}"
+              class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 flex items-center"
+      >
+        <i class="fas fa-plus ml-2"></i>إضافة خدمة جديدة
+      </a>
+    </div>
+
+    <!-- Stats Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <div class="text-gray-500 mb-2">إجمالي الخدمات</div>
+        <div class="text-blue-600 text-3xl font-bold">{{ services|length }}</div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <div class="text-gray-500 mb-2">متوسط السعر</div>
+        <div class="text-blue-600 text-3xl font-bold">
+          {% if avg_price %}
+          {{ avg_price }} ر.س
+          {% else %}
+          0 ر.س
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <div class="text-gray-500 mb-2">متوسط المدة</div>
+        <div class="text-blue-600 text-3xl font-bold">
+          {% if avg_duration_hours %}
+          ساعة {{ avg_duration_hours }} {{ avg_duration_minutes }} دقيقة
+          {% else %}
+          0 دقيقة
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Sort Controls -->
+    <div class="flex flex-col md:flex-row gap-4 mb-6">
+      <div class="md:w-1/4">
+        <div class="relative">
+          <select id="sort-services" class="w-full p-2 border border-gray-300 rounded-md appearance-none pr-8">
+            <option value="name">ترتيب حسب الاسم</option>
+            <option value="price">ترتيب حسب السعر</option>
+            <option value="duration">ترتيب حسب المدة</option>
+          </select>
+          <div class="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+            <i class="fas fa-chevron-down text-gray-400"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="md:w-3/4">
+        <input
+                type="text"
+                id="search-services"
+                placeholder="ابحث عن خدمة..."
+                class="w-full p-2 border border-gray-300 rounded-md"
+        >
+      </div>
+    </div>
+
+    <!-- Services Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="services-container">
+      {% for service in services %}
+      <div class="bg-white rounded-lg shadow overflow-hidden service-card mb-8">
+        <div class="p-4 text-center">
+          {% if service.image %}
+          <div class="mb-3">
+            <img src="{{ service.image.url }}" alt="{{ service.title }}" class="h-32 w-full mx-auto object-cover rounded">
+          </div>
+          {% endif %}
+          <h3 class="text-blue-600 text-xl font-bold mb-2">{{ service.title }}</h3>
+          <p class="text-gray-600 mb-4">{{ service.desc }}</p>
+          <div class="flex justify-center items-center gap-2 mb-2">
+            <i class="far fa-clock text-gray-500"></i>
+            <span>
+              {% if service.duration >= 60 %}
+                ساعة {{ service.duration|divisibleby:60 }} {{ service.duration|modulo:60 }} دقيقة
+              {% else %}
+                {{ service.duration }} دقيقة
+              {% endif %}
+            </span>
+          </div>
+          <div class="flex justify-center items-center gap-2 mb-4">
+            <i class="fas fa-coins text-yellow-500"></i>
+            {% if service.discounted_price %}
+            <span class="line-through text-gray-500">{{ service.price }} ر.س</span>
+            <span class="text-blue-600 font-bold">{{ service.discounted_price }} ر.س</span>
+            {% else %}
+            <span>{{ service.price }} ر.س</span>
+            {% endif %}
+          </div>
+
+          <div class="mt-2">
+            {% if service.is_enabled %}
+            <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-sm">متاح</span>
+            {% else %}
+            <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-sm">غير متاح</span>
+            {% endif %}
+          </div>
+        </div>
+        <div class="flex">
+          <a href="{% url 'editServices' service.id %}" class="bg-blue-600 hover:bg-blue-700 text-white w-1/2 py-2 text-center">تعديل</a>
+          <a href="{% url 'DeleteServices' service.id %}" class="bg-purple-600 hover:bg-purple-700 text-white w-1/2 py-2 text-center delete-service" data-id="{{ service.id }}">حذف</a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-span-full text-center p-8 bg-white rounded-lg shadow">
+        <p class="text-gray-500">لا توجد خدمات متاحة حالياً</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<script>
+  // Search functionality
+  document.getElementById('search-services').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const serviceCards = document.querySelectorAll('.service-card');
+
+    serviceCards.forEach(card => {
+      const title = card.querySelector('h3').textContent.toLowerCase();
+      const description = card.querySelector('p').textContent.toLowerCase();
+
+      if (title.includes(searchTerm) || description.includes(searchTerm)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+
+  // Sort functionality
+  document.getElementById('sort-services').addEventListener('change', function() {
+    const sortBy = this.value;
+    const container = document.getElementById('services-container');
+    const serviceCards = Array.from(document.querySelectorAll('.service-card'));
+
+    serviceCards.sort((a, b) => {
+      if (sortBy === 'name') {
+        const nameA = a.querySelector('h3').textContent.toLowerCase();
+        const nameB = b.querySelector('h3').textContent.toLowerCase();
+        return nameA.localeCompare(nameB);
+      } else if (sortBy === 'price') {
+        const priceA = getPriceValue(a);
+        const priceB = getPriceValue(b);
+        return priceA - priceB;
+      } else if (sortBy === 'duration') {
+        const durationA = getDurationValue(a);
+        const durationB = getDurationValue(b);
+        return durationA - durationB;
+      }
+      return 0;
+    });
+
+    // Remove all current cards
+    serviceCards.forEach(card => card.remove());
+
+    // Add sorted cards
+    serviceCards.forEach(card => container.appendChild(card));
+  });
+
+  // Helper function to get the price value for sorting
+  function getPriceValue(card) {
+    const discountedPrice = card.querySelector('.text-blue-600.font-bold');
+    if (discountedPrice) {
+      return parseFloat(discountedPrice.textContent.replace(/[^\d.-]/g, ''));
+    }
+    return parseFloat(card.querySelector('.fa-coins').nextElementSibling.textContent.replace(/[^\d.-]/g, ''));
+  }
+
+  // Helper function to get the duration value for sorting
+  function getDurationValue(card) {
+    const durationText = card.querySelector('.fa-clock').nextElementSibling.textContent;
+    let minutes = 0;
+
+    if (durationText.includes('ساعة')) {
+      const hours = parseInt(durationText.match(/ساعة (\d+)/)[1] || 0);
+      minutes += hours * 60;
+
+      const minutesPart = durationText.match(/(\d+) دقيقة/);
+      if (minutesPart && minutesPart[1]) {
+        minutes += parseInt(minutesPart[1]);
+      }
+    } else {
+      minutes = parseInt(durationText.match(/(\d+) دقيقة/)[1] || 0);
+    }
+
+    return minutes;
+  }
+
+  // Confirm delete
+  document.querySelectorAll('.delete-service').forEach(button => {
+    button.addEventListener('click', function(e) {
+      if (!confirm('هل أنت متأكد من حذف هذه الخدمة؟')) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+
+{% endblock %}

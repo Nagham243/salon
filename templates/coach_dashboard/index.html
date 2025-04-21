@@ -1,0 +1,185 @@
+{% extends "base_coach_dashboard.html" %} 
+{% block content %}
+
+<div class="xl:pr-[20%] bg-indigo-50 w-full px-4 md:px-8 min-h-screen pb-12">
+  <h1 class="text-4xl font-bold text-indigo-800 py-16 px-4 md:px-8">
+    الموظف {{ coachName }}
+  </h1>
+
+  <!-- الكروت -->
+<!--  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-8">-->
+
+    <!-- كارت مواعيد المدرب -->
+<!--    <div class="flex flex-col gap-6 rounded-xl bg-white p-8 shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1">-->
+<!--      <div class="flex items-center justify-between">-->
+<!--        <h2 class="text-2xl font-bold text-indigo-800">مجموع مواعيدي</h2>-->
+<!--        <i class="fas fa-calendar-check text-indigo-600 text-3xl"></i>-->
+<!--      </div>-->
+<!--      <p class="text-center text-6xl font-bold text-indigo-600">{{CoachAppointments.count}}</p>-->
+<!--      <div class="text-sm text-gray-600 text-center">-->
+<!--        <p>آخر تحديث: {{CoachAppointments.first.creation_date|date:"Y-m-d H:i"}}</p>-->
+<!--      </div>-->
+<!--      <a-->
+<!--        href="/coach_dashboard/viewCoachAppointments"-->
+<!--        class="w-full rounded-lg bg-indigo-700 text-center text-white py-3 hover:bg-indigo-800 transition duration-300 flex items-center justify-center"-->
+<!--      >-->
+<!--        <span>عرض التفاصيل</span>-->
+<!--        <i class="fas fa-arrow-right mr-2"></i>-->
+<!--      </a>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; كارت مواعيد المشتركين &ndash;&gt;-->
+<!--    <div class="flex flex-col gap-6 rounded-xl bg-white p-8 shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1">-->
+<!--      <div class="flex items-center justify-between">-->
+<!--        <h2 class="text-2xl font-bold text-indigo-800">مواعيد المشتركين</h2>-->
+<!--        <i class="fas fa-users text-indigo-600 text-3xl"></i>-->
+<!--      </div>-->
+<!--      <p class="text-center text-6xl font-bold text-indigo-600">{{StudentAppointmentPresences.count}}</p>-->
+<!--      <div class="text-sm text-gray-600 text-center">-->
+<!--        <p>زيادة بنسبة 5٪ عن الأسبوع الماضي</p>-->
+<!--      </div>-->
+<!--      <a-->
+<!--        href="/coach_dashboard/viewStudentAppointmentPresences"-->
+<!--        class="w-full rounded-lg bg-indigo-700 text-center text-white py-3 hover:bg-indigo-800 transition duration-300 flex items-center justify-center"-->
+<!--      >-->
+<!--        <span>عرض التفاصيل</span>-->
+<!--        <i class="fas fa-arrow-right mr-2"></i>-->
+<!--      </a>-->
+<!--    </div>-->
+
+    <!-- كارت الإحصائيات -->
+<!--    <div class="flex flex-col gap-6 rounded-xl bg-white p-8 shadow-lg hover:shadow-xl transition duration-300 transform hover:-translate-y-1">-->
+<!--      <div class="flex items-center justify-between">-->
+<!--        <h2 class="text-2xl font-bold text-indigo-800">الإحصائيات</h2>-->
+<!--        <i class="fas fa-chart-line text-indigo-600 text-3xl"></i>-->
+<!--      </div>-->
+<!--      <p class="text-center text-6xl font-bold text-indigo-600">85%</p>-->
+<!--      <div class="text-sm text-gray-600 text-center">-->
+<!--        <p>نسبة رضا المشتركين</p>-->
+<!--      </div>-->
+<!--      <a-->
+<!--        href="#"-->
+<!--        class="w-full rounded-lg bg-indigo-700 text-center text-white py-3 hover:bg-indigo-800 transition duration-300 flex items-center justify-center"-->
+<!--      >-->
+<!--        <span>عرض التفاصيل</span>-->
+<!--        <i class="fas fa-arrow-right mr-2"></i>-->
+<!--      </a>-->
+<!--    </div>-->
+<!--  </div>-->
+
+  <!-- جدول المواعيد القادمة -->
+  <div class="mt-12 bg-white rounded-xl shadow-lg m-8 px-4 md:px-8 py-6">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold text-indigo-800">المواعيد القادمة</h3>
+      <a href="{% url 'viewCoachAppointments' %}" class="text-indigo-600 hover:text-indigo-800 transition duration-300">عرض الكل</a>
+    </div>
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      <table class="w-full text-sm text-right text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">اسم العميل</th>
+          <th scope="col" class="px-6 py-3">تاريخ البدء</th>
+          <th scope="col" class="px-6 py-3">تاريخ الانتهاء</th>
+          <th scope="col" class="px-6 py-3">الخدمات</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for appointment in CoachAppointments %}
+        <tr class="bg-white border-b hover:bg-gray-50">
+          <td class="px-6 py-4 font-medium text-gray-900">
+            {{ appointment.coach.full_name }}
+          </td>
+          <td class="px-6 py-4">
+            {{ appointment.start_datetime|date:"Y-m-d H:i" }}
+          </td>
+          <td class="px-6 py-4">
+            {{ appointment.end_datetime|date:"Y-m-d H:i" }}
+          </td>
+          <td class="px-6 py-4">
+            <a href="{% url 'editCoachAppointments' appointment.id %}" class="font-medium text-indigo-600 hover:underline mr-2"
+            >تعديل</a
+            >
+            <a href="{% url 'deleteCoachAppointments' appointment.id %}" class="font-medium text-red-600 hover:underline">حذف</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr class="bg-white border-b">
+          <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+            لا توجد مواعيد حالياً
+          </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- أفضل التقييمات -->
+  <div class="mt-12 bg-white rounded-xl shadow-lg m-8 px-4 md:px-8 py-6">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-2xl font-bold text-indigo-800">أفضل التقييمات</h3>
+      <a href="#" class="text-indigo-600 hover:text-indigo-800 transition duration-300">عرض الكل</a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-right text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">الترتيب</th>
+          <th scope="col" class="px-6 py-3">اسم الموظف</th>
+          <th scope="col" class="px-6 py-3">التقييم</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="bg-white border-b hover:bg-gray-50">
+          <td class="px-6 py-4 font-bold text-indigo-600">1</td>
+          <td class="px-6 py-4 font-medium text-gray-900">محمد أحمد</td>
+          <td class="px-6 py-4 flex items-center">
+            <div class="flex items-center text-yellow-500 ml-2">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <span class="text-gray-600">5.0</span>
+          </td>
+        </tr>
+        <tr class="bg-white border-b hover:bg-gray-50">
+          <td class="px-6 py-4 font-bold text-indigo-600">2</td>
+          <td class="px-6 py-4 font-medium text-gray-900">سارة علي</td>
+          <td class="px-6 py-4 flex items-center">
+            <div class="flex items-center text-yellow-500 ml-2">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="far fa-star"></i>
+            </div>
+            <span class="text-gray-600">4.0</span>
+          </td>
+        </tr>
+        <tr class="bg-white border-b hover:bg-gray-50">
+          <td class="px-6 py-4 font-bold text-indigo-600">3</td>
+          <td class="px-6 py-4 font-medium text-gray-900">عمر محمود</td>
+          <td class="px-6 py-4 flex items-center">
+            <div class="flex items-center text-yellow-500 ml-2">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star-half-alt"></i>
+              <i class="far fa-star"></i>
+            </div>
+            <span class="text-gray-600">3.5</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-6 text-center flex justify-end items-end">
+      <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">
+        عرض المزيد
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}

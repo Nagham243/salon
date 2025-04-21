@@ -1,0 +1,68 @@
+{% extends "base_receptionist_dashboard.html" %}
+
+{% block content %}
+<div class="xl:pr-[20%] bg-indigo-50 w-full px-4 md:px-8 min-h-screen pb-12">
+  <div class="flex justify-between items-center py-8">
+    <h1 class="text-4xl font-bold text-indigo-800">قائمة العملاء</h1>
+    <a
+      href="{% url 'addStudentFromReceptionist' %}"
+      class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-300"
+    >
+      إضافة عميل جديد
+    </a>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <table class="w-full text-sm text-right text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">الاسم</th>
+          <th scope="col" class="px-6 py-3">البريد الإلكتروني</th>
+          <th scope="col" class="px-6 py-3">الاسم الكامل</th>
+          <th scope="col" class="px-6 py-3">الهاتف</th>
+          <th scope="col" class="px-6 py-3">تاريخ الميلاد</th>
+          <th scope="col" class="px-6 py-3">الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for student in students %}
+        <tr class="bg-white border-b hover:bg-gray-50">
+          <td class="px-6 py-4 font-medium text-gray-900">
+            {{ student.user.username }}
+          </td>
+          <td class="px-6 py-4">{{ student.user.email }}</td>
+          <td class="px-6 py-4">
+            {{ student.student_profile.full_name|default:"❌ غير متوفر" }}
+          </td>
+          <td class="px-6 py-4">
+            {{ student.student_profile.phone|default:"❌ غير متوفر" }}
+          </td>
+          <td class="px-6 py-4">
+            {{ student.student_profile.birthday|default:"❌ غير متوفر" }}
+          </td>
+
+
+          <!-- ✅ أزرار الإجراءات بتصميم احترافي -->
+          <td class="px-6 py-4 flex flex-col md:flex-row gap-2">
+            <a href="{% url 'editStudentt' student.student_profile.id %}"
+               class="inline-flex items-center justify-center bg-blue-600 text-white text-xs font-semibold px-4 py-1 rounded-md hover:bg-blue-700 transition duration-200">
+              ✏️ تعديل
+            </a>
+            <a href="{% url 'deleteStudentt' student.student_profile.id %}"
+               class="inline-flex items-center justify-center bg-red-600 text-white text-xs font-semibold px-4 py-1 rounded-md hover:bg-red-700 transition duration-200">
+              🗑 حذف
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr class="bg-white border-b">
+          <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+            🚫 لا يوجد عملاء حالياً
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

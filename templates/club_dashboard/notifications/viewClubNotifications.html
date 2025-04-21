@@ -1,0 +1,30 @@
+{% extends "base_club_dashboard.html" %}
+
+{% block content %}
+<div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-4 text-indigo-800 flex justify-end items-center">
+        الإشعارات
+        <svg class="w-6 h-6 text-yellow-500 ml-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C10.34 2 9 3.34 9 5V6C6.24 6 4 8.24 4 11V16L2 18V19H22V18L20 16V11C20 8.24 17.76 6 15 6V5C15 3.34 13.66 2 12 2ZM12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22Z"/>
+        </svg>
+    </h2>
+
+    {% if notifications %}
+    <ul class="divide-y divide-gray-200">
+        {% for notification in notifications %}
+            <li class="p-4 {% if not notification.is_read %}bg-yellow-100{% else %}bg-white{% endif %} rounded-lg shadow-sm flex justify-between items-center text-right">
+                <span class="text-gray-500 text-xs ml-4">{{ notification.created_at|date:"d M Y, H:i" }}</span>
+                <div class="flex items-center">
+                    <span class="text-gray-800">{{ notification.message }}</span>
+                    <svg class="w-5 h-5 text-gray-600 ml-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C10.34 2 9 3.34 9 5V6C6.24 6 4 8.24 4 11V16L2 18V19H22V18L20 16V11C20 8.24 17.76 6 15 6V5C15 3.34 13.66 2 12 2ZM12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22Z"/>
+                    </svg>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p class="text-gray-500 text-center py-6">لا توجد إشعارات</p>
+    {% endif %}
+</div>
+{% endblock %}

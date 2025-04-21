@@ -1,0 +1,38 @@
+{% extends "base_student_dashboard.html" %}
+
+{% block content %}
+<div class="bg-blue-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 text-blue-900">
+        تعديل التقييم
+      </h1>
+      <p class="text-xl text-blue-700 max-w-2xl mx-auto">
+        قم بتعديل تقييمك للموظف {{ review.coach.full_name }}.
+      </p>
+    </div>
+
+    <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+      <form method="post">
+        {% csrf_token %}
+        
+        <!-- Rating Input -->
+        <div class="mb-4">
+          <label class="block text-gray-700">التقييم</label>
+          {{ form.rating }}
+        </div>
+
+        <!-- Comment Input -->
+        <div class="mb-4">
+          <label class="block text-gray-700">التعليق</label>
+          {{ form.comment }}
+        </div>
+
+        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+          تحديث التقييم
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

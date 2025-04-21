@@ -1,0 +1,70 @@
+{% extends "base_club_dashboard.html" %}
+
+{% block content %}
+<div class="xl:pr-[20%] bg-indigo-50 w-full px-4 md:px-8 min-h-screen pb-12">
+  <div class="flex justify-between items-center py-8">
+    <h1 class="text-4xl font-bold text-indigo-800">قائمة الاداريين</h1>
+    <a href="{% url 'addDirector' %}"
+       class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition duration-300">
+      اضافه ادارى جديد
+    </a>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <table class="w-full text-sm text-right text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">اسم المستخدم</th>
+          <th scope="col" class="px-6 py-3">البريد الإلكتروني</th>
+          <th scope="col" class="px-6 py-3">الاسم كامل</th>
+          <th scope="col" class="px-6 py-3">الهاتف</th>
+          <th scope="col" class="px-6 py-3">تاريخ الإنضمام</th>
+          <th scope="col" class="px-6 py-3">الخيارات</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for director in directors %}
+        <tr class="bg-white border-b hover:bg-gray-50">
+          <td class="px-6 py-4 font-medium text-gray-900">
+            {{ director.user.username }}
+          </td>
+          <td class="px-6 py-4">{{ director.user.email }}</td>
+
+          {# ✅ Ensure director_profile exists before accessing attributes #}
+          {% if director.director_profile %}
+            <td class="px-6 py-4">{{ director.director_profile.full_name }}</td>
+            <td class="px-6 py-4">{{ director.director_profile.phone }}</td>
+          {% else %}
+            <td class="px-6 py-4 text-gray-400">غير متوفر</td>
+            <td class="px-6 py-4 text-gray-400">غير متوفر</td>
+          {% endif %}
+
+          <td class="px-6 py-4">{{ director.user.date_joined|date:"Y-m-d" }}</td>
+          <td class="px-6 py-4">
+            {% if director.director_profile %}
+              <a href="{% url 'editDirector' director.director_profile.id %}" 
+                 class="font-medium text-indigo-600 hover:underline ml-2">
+                تعديل
+              </a>
+              <a href="{% url 'deleteDirector' director.director_profile.id %}" 
+                 class="font-medium text-red-600 hover:underline"
+                 onclick="return confirm('هل أنت متأكد أنك تريد حذف هذا المدير؟ هذه العملية لا يمكن التراجع عنها.');">
+                حذف
+              </a>
+            {% else %}
+              <span class="text-gray-400">لا يمكن التعديل</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr class="bg-white border-b">
+          <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+            لا يوجد مديرين حالياً
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

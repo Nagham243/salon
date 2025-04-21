@@ -1,0 +1,73 @@
+{% extends 'base_student_dashboard.html' %} {% load static %} {% block content %}
+<div class="bg-indigo-50 min-h-screen flex items-center mb-16">
+  <div class="container mx-auto px-4 mb-16 sm:px-6 lg:px-8">
+    <div class="bg-white shadow-xl rounded-lg overflow-hidden">
+      <div class="px-4 py-5 sm:px-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <img
+              class="h-32 w-32 rounded-full border-4 border-white"
+              src="https://via.placeholder.com/128"
+              alt="صورة الملف الشخصي للعميل"
+            />
+          </div>
+          <div class="mr-6">
+            <h1 class="text-3xl font-bold text-gray-900">{{ student.full_name }}</h1>
+            <p class="text-xl text-gray-600">عميل في {{ student.club.name }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+          نبذة عن العميل
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ student.about }}</p>
+      </div>
+      <div class="border-t border-gray-200">
+        <dl>
+          <div
+            class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+          >
+            <dt class="text-sm font-medium text-gray-500">العمر</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ student.age }} سنة
+            </dd>
+          </div>
+          <div
+            class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+          >
+            <dt class="text-sm font-medium text-gray-500">البريد الإلكتروني</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ userprofile.user.email }}
+            </dd>
+          </div>
+          <div
+            class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+          >
+            <dt class="text-sm font-medium text-gray-500">رقم الهاتف</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ student.phone }}
+            </dd>
+          </div>
+          <div
+            class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
+          >
+            <dt class="text-sm font-medium text-gray-500">الصالون</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ student.club.name }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 sm:px-10 flex justify-end">
+        <a
+          href="{% url 'edit_student_profile' %}"
+          class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+        >
+          تعديل الحساب
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

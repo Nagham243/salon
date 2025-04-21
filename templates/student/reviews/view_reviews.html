@@ -1,0 +1,55 @@
+{% extends "base_student_dashboard.html" %}
+
+{% block content %}
+<div class="bg-blue-50 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    
+    <!-- Page Title -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 text-blue-900">
+        تقييماتك
+      </h1>
+      <p class="text-xl text-blue-700 max-w-2xl mx-auto">
+        استعرض وقم بتعديل تقييماتك السابقة لموظفي الصالون.
+      </p>
+    </div>
+
+    <!-- Review List Section -->
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+      {% if student_reviews %}
+        <ul class="space-y-3">
+          {% for review in student_reviews %}
+            <li class="p-4 border rounded-lg shadow transition hover:shadow-lg bg-gray-50">
+              <div class="flex justify-between items-center">
+                <h4 class="font-bold text-blue-800 text-lg">{{ review.coach.full_name }}</h4>
+                <p class="text-sm text-gray-600">⭐ {{ review.rating }}</p>
+              </div>
+              <p class="text-gray-800 mt-2">{{ review.comment }}</p>
+              <p class="text-xs text-gray-500 mt-2">📅 {{ review.created_at|date:"Y-m-d H:i" }}</p>
+
+              <!-- Edit Button -->
+              <div class="mt-3 flex justify-end">
+                <a href="{% url 'edit_review' review.id %}" 
+                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                  تعديل التقييم
+                </a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-center text-gray-500 text-lg">❌ لم تقم بإضافة أي تقييمات بعد.</p>
+      {% endif %}
+
+      <!-- Add New Review Button -->
+      <div class="mt-6 text-center">
+        <a href="{% url 'add_review' %}" 
+           class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          + إضافة تقييم جديد
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

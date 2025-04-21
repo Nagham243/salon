@@ -1,0 +1,142 @@
+{% extends "base_receptionist_dashboard.html" %}
+{% block content %}
+
+<div class="xl:pr-[20%] bg-indigo-50 w-full px-4 md:px-8 min-h-screen pb-12">
+    <h1 class="text-4xl font-bold text-indigo-800 py-16 px-4 md:px-8">
+        موظف الاستقبال {{ receptionist.full_name }}
+    </h1>
+
+    <div class="mt-12 bg-white rounded-xl shadow-lg m-8 px-4 md:px-8 py-6">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">معلومات الموظف</h2>
+            <p><strong>الاسم:</strong> {{ receptionist.full_name }}</p>
+            <p><strong>البريد الإلكتروني:</strong> {{ receptionist.email }}</p>
+            <p><strong>رقم الهاتف:</strong> {{ receptionist.phone }}</p>
+            <p><strong>النادي:</strong> {{ receptionist.club.name }}</p>
+        </div>
+    </div>
+
+
+<!--    &lt;!&ndash; أفضل التقييمات &ndash;&gt;-->
+<!--    <div class="mt-12 bg-white rounded-xl shadow-lg m-8 px-4 md:px-8 py-6">-->
+<!--        <div class="flex justify-between items-center mb-6">-->
+<!--            <h3 class="text-2xl font-bold text-indigo-800">أفضل التقييمات</h3>-->
+<!--            <a href="#" class="text-indigo-600 hover:text-indigo-800 transition duration-300">عرض الكل</a>-->
+<!--        </div>-->
+<!--        <div class="overflow-x-auto">-->
+<!--            <table class="w-full text-sm text-right text-gray-500">-->
+<!--                <thead class="text-xs text-gray-700 uppercase bg-gray-50">-->
+<!--                <tr>-->
+<!--                    <th scope="col" class="px-6 py-3">الترتيب</th>-->
+<!--                    <th scope="col" class="px-6 py-3">اسم الموظف</th>-->
+<!--                    <th scope="col" class="px-6 py-3">التقييم</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                <tr class="bg-white border-b hover:bg-gray-50">-->
+<!--                    <td class="px-6 py-4 font-bold text-indigo-600">1</td>-->
+<!--                    <td class="px-6 py-4 font-medium text-gray-900">محمد أحمد</td>-->
+<!--                    <td class="px-6 py-4 flex items-center">-->
+<!--                        <div class="flex items-center text-yellow-500 ml-2">-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                        </div>-->
+<!--                        <span class="text-gray-600">5.0</span>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                <tr class="bg-white border-b hover:bg-gray-50">-->
+<!--                    <td class="px-6 py-4 font-bold text-indigo-600">2</td>-->
+<!--                    <td class="px-6 py-4 font-medium text-gray-900">سارة علي</td>-->
+<!--                    <td class="px-6 py-4 flex items-center">-->
+<!--                        <div class="flex items-center text-yellow-500 ml-2">-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="far fa-star"></i>-->
+<!--                        </div>-->
+<!--                        <span class="text-gray-600">4.0</span>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                <tr class="bg-white border-b hover:bg-gray-50">-->
+<!--                    <td class="px-6 py-4 font-bold text-indigo-600">3</td>-->
+<!--                    <td class="px-6 py-4 font-medium text-gray-900">عمر محمود</td>-->
+<!--                    <td class="px-6 py-4 flex items-center">-->
+<!--                        <div class="flex items-center text-yellow-500 ml-2">-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star"></i>-->
+<!--                            <i class="fas fa-star-half-alt"></i>-->
+<!--                            <i class="far fa-star"></i>-->
+<!--                        </div>-->
+<!--                        <span class="text-gray-600">3.5</span>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <!-- بطاقة العملاء - Students Card -->
+    <div class="mt-12 bg-white rounded-xl shadow-lg m-8 px-4 md:px-8 py-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold text-indigo-800">قائمة العملاء</h3>
+            <a href="{% url 'viewStudentss' %}" class="text-indigo-600 hover:text-indigo-800 transition duration-300">عرض الكل</a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            {% for student in students|slice:":4" %}
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition flex items-center p-3">
+                <div class="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xl mr-3">
+                    {{ student.student_profile.full_name|default:"؟"|slice:":1" }}
+                </div>
+
+                <div class="flex-grow">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-gray-800">{{ student.user.username }}</h4>
+                        <div class="text-sm text-gray-500">
+                            {% if student.student_profile.phone %}
+                            <i class="fas fa-phone-alt mr-1"></i> {{ student.student_profile.phone }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm text-gray-600 truncate max-w-xs">{{ student.user.email }}</p>
+                        <div class="flex gap-2">
+                            <a href="{% url 'editStudentt' student.student_profile.id %}" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'deleteStudentt' student.student_profile.id %}" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-2 flex flex-col items-center justify-center py-6 text-center">
+                <div class="bg-gray-100 rounded-full p-3 mb-3">
+                    <i class="fas fa-user-slash text-xl text-gray-400"></i>
+                </div>
+                <p class="text-gray-500">لا يوجد عملاء حالياً</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Simple Pagination -->
+        {% if students.count > 4 %}
+        <div class="flex justify-center mt-4">
+            <div class="inline-flex rounded-md shadow">
+                <a href="{% url 'viewStudents' %}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    عرض المزيد
+                    <i class="fas fa-chevron-left mr-2"></i>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

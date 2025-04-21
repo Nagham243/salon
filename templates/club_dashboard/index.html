@@ -1,0 +1,153 @@
+{% extends "base_club_dashboard.html" %}
+
+{% block content %}
+<main class="xl:pr-[20%] bg-indigo-50 w-full px-4 md:px-8 min-h-screen pb-12">
+  <h1 class="text-4xl font-extrabold py-16 text-center text-indigo-800">
+    المدير {{ directors.0.user.username }}
+  </h1>
+
+  <!-- Club Overview Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-2 md:px-8 mb-8">
+    
+    <!-- Clients Card -->
+    <div class="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-lg hover:shadow-xl transition duration-300">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-indigo-800">العملاء</h2>
+      </div>
+      <p class="text-center text-5xl font-bold text-indigo-600">{{ students.count }}</p>
+      <a href="{% url 'viewStudents' %}" class="w-full rounded-lg bg-indigo-700 text-center text-white py-2 hover:bg-indigo-800 transition duration-300">
+        عرض التفاصيل
+      </a>
+    </div>
+
+    <!-- Workers Card -->
+    <div class="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-lg hover:shadow-xl transition duration-300">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-indigo-800">الموظفين</h2>
+      </div>
+      <p class="text-center text-5xl font-bold text-indigo-600">{{ coaches.count }}</p>
+      <a href="{% url 'viewCoachs' %}" class="w-full rounded-lg bg-indigo-700 text-center text-white py-2 hover:bg-indigo-800 transition duration-300">
+        عرض التفاصيل
+      </a>
+    </div>
+
+    <!-- Admins Card -->
+    <div class="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-lg hover:shadow-xl transition duration-300">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-green-800">الإداريين</h2>
+      </div>
+      <p class="text-center text-5xl font-bold text-green-600">{{ director_count|default:0 }}</p>
+      <a href="{% url 'viewDirectors' %}" class="w-full rounded-lg bg-green-700 text-center text-white py-2 hover:bg-green-800 transition duration-300">
+        عرض التفاصيل
+      </a>
+    </div>
+
+    <!-- Revenue Card -->
+    <div class="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-lg hover:shadow-xl transition duration-300">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-indigo-800">الإيرادات</h2>
+      </div>
+      <p class="text-center text-4xl font-bold text-indigo-600">{{ total_revenue }} ريال</p>
+      <a href="{% url 'club_financial_dashboard' %}" class="block mt-auto w-full rounded-lg bg-indigo-700 text-center text-white py-2 hover:bg-indigo-800 transition duration-300">
+        التفاصيل المالية
+      </a>
+    </div>
+  </div>
+
+  <!-- Subscription Status -->
+<!--  <div class="bg-white rounded-xl shadow-lg p-6 mx-2 md:mx-8 mb-8">-->
+<!--    <h2 class="text-2xl font-bold text-indigo-800 mb-4">حالة الاشتراكات</h2>-->
+<!--    <div class="space-y-4">-->
+<!--      -->
+<!--      &lt;!&ndash; Active Subscriptions &ndash;&gt;-->
+<!--      <div>-->
+<!--        <div class="flex justify-between mb-1">-->
+<!--          <span class="text-base font-medium text-indigo-700">الاشتراكات النشطة</span>-->
+<!--          <span class="text-sm font-medium text-indigo-700">{{ active_count }} ({{ active_percentage }}%)</span>-->
+<!--        </div>-->
+<!--        <div class="w-full bg-gray-200 rounded-full h-2.5">-->
+<!--          <div class="bg-indigo-600 h-2.5 rounded-full" style="width: {{ active_percentage }}%"></div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Expiring Soon &ndash;&gt;-->
+<!--      <div>-->
+<!--        <div class="flex justify-between mb-1">-->
+<!--          <span class="text-base font-medium text-yellow-700">الاشتراكات المنتهية قريباً</span>-->
+<!--          <span class="text-sm font-medium text-yellow-700">{{ expiring_soon_count }} ({{ expiring_soon_percentage }}%)</span>-->
+<!--        </div>-->
+<!--        <div class="w-full bg-gray-200 rounded-full h-2.5">-->
+<!--          <div class="bg-yellow-400 h-2.5 rounded-full" style="width: {{ expiring_soon_percentage }}%"></div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      &lt;!&ndash; Expired Subscriptions &ndash;&gt;-->
+<!--      <div>-->
+<!--        <div class="flex justify-between mb-1">-->
+<!--          <span class="text-base font-medium text-red-700">الاشتراكات المنتهية</span>-->
+<!--          <span class="text-sm font-medium text-red-700">{{ expired_count }} ({{ expired_percentage }}%)</span>-->
+<!--        </div>-->
+<!--        <div class="w-full bg-gray-200 rounded-full h-2.5">-->
+<!--          <div class="bg-red-600 h-2.5 rounded-full" style="width: {{ expired_percentage }}%"></div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--    </div>-->
+<!--  </div>-->
+
+  <!-- Reviews Card -->
+<div class="bg-white rounded-xl shadow-lg p-6 mx-2 md:mx-8 mb-8">
+      <h2 class="text-2xl font-bold text-indigo-800 mb-4">📝 التقييمات الأخيرة</h2>
+      <a href="{% url 'reviews_list' %}" class="w-full mt-4 rounded-lg bg-indigo-700 text-center text-white py-2 hover:bg-indigo-800 transition duration-300 block">
+              عرض جميع التقييمات
+      </a>
+</div>
+
+
+  <!-- Top Rated Coaches -->
+  <div class="bg-white rounded-xl shadow-lg p-6 mx-2 md:mx-8 mb-8">
+    <h2 class="text-2xl font-bold text-indigo-800 mb-4">🏆 الموظفون الأعلى تقييماً</h2>
+    <ul class="space-y-3">
+      {% for coach in top_rated_coaches %}
+      <li class="flex items-center justify-between bg-indigo-50 rounded-lg p-3">
+        <div class="flex items-center">
+          <p class="font-semibold text-indigo-800">{{ coach.full_name }}</p>
+        </div>
+        <span class="bg-indigo-200 text-indigo-800 py-1 px-3 rounded-full text-sm font-semibold">
+          ⭐ {{ coach.avg_rating|floatformat:1 }}
+        </span>
+      </li>
+      {% empty %}
+      <li class="text-center text-gray-500">🚫 لا يوجد موظفين بتقييم عالي</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Top Student Reviews -->
+  <div class="bg-white rounded-xl shadow-lg p-6 mx-2 md:mx-8 mb-8">
+    <h2 class="text-2xl font-bold text-indigo-800 mb-4">🌟 أفضل التقييمات من العملاء</h2>
+    <ul class="space-y-3">
+      {% for review in top_reviews %}
+      <li class="flex flex-col bg-indigo-50 rounded-lg p-4">
+        <div class="flex justify-between items-center">
+          <p class="font-semibold text-indigo-800">
+            {{ review.student.full_name }} <span class="text-indigo-600">{{ review.coach.user.username }}</span>
+          </p>
+          <span class="bg-indigo-200 text-indigo-800 py-1 px-3 rounded-full text-sm font-semibold">
+            ⭐ {{ review.rating }}/5
+          </span>
+        </div>
+        <p class="text-gray-600 mt-2">
+          "{{ review.comment }}"
+        </p>
+        <p class="text-sm text-gray-400 mt-1">
+          🕒 {{ review.created_at|date:"Y-m-d H:i" }}
+        </p>
+      </li>
+      {% empty %}
+      <li class="text-center text-gray-500">🚫 لا توجد تقييمات حالياً</li>
+      {% endfor %}
+    </ul>
+  </div>
+</main>
+{% endblock %}

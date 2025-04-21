@@ -1,0 +1,194 @@
+{% extends "base_student_dashboard.html" %} {% load students_tags %} {% load static %} {% block content %}
+
+<div class="bg-blue-50 min-h-screen">
+  <section class="container mx-auto px-4 pt-8 pb-16">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-indigo-800">منتجات الصالون 📦</h1>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm mb-2 text-right">إجمالي المنتجات</h3>
+        <div class="text-4xl font-bold text-indigo-600 text-right">{{ total_products }}</div>
+      </div>
+<!--      <div class="bg-white p-6 rounded-lg shadow-md">-->
+<!--        <h3 class="text-gray-500 text-sm mb-2 text-right">الأقسام المتاحة</h3>-->
+<!--        <div class="text-4xl font-bold text-blue-600 text-right">{{ classifications.count }}</div>-->
+<!--      </div>-->
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-gray-500 text-sm mb-2 text-right">أحدث المنتجات</h3>
+        <div class="text-4xl font-bold text-yellow-500 text-right">{% if products %}{{ products.0.title|truncatechars:15 }}{% else %}لا يوجد{% endif %}</div>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="relative">
+        <button id="resetFilters" class="w-full px-3 py-2.5 bg-gray-200 border border-gray-300 rounded-md hover:bg-gray-300 transition">
+          إعادة تعيين
+        </button>
+      </div>
+      <div class="relative">
+        <input
+                id="searchInput"
+                type="text"
+                placeholder="بحث عن منتج..."
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+      <div class="relative">
+        <select id="priceFilter" class="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          <option value="">جميع الأسعار</option>
+          <option value="low">أقل من 50 ريال</option>
+          <option value="medium">50 - 100 ريال</option>
+          <option value="high">أكثر من 100 ريال</option>
+        </select>
+      </div>
+<!--      <div class="relative">-->
+<!--        <select id="categoryFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">-->
+<!--          <option value="">جميع الأقسام</option>-->
+<!--          {% for classification in classifications %}-->
+<!--          <option value="{{classification.id}}">{{classification.title}}</option>-->
+<!--          {% endfor %}-->
+<!--        </select>-->
+<!--      </div>-->
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      {% for product in products %}
+      <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col h-full product-card"
+           data-name="{{ product.title|lower }}"
+           data-price="{{ product.price }}"
+           data-category="{{ product.classification.id }}">
+        <div class="h-60 overflow-hidden">
+          {% if product.product_images.all %}
+          <img
+                  src="{{ product.product_images.first.img.url }}?v={{ product.updated_at|date:'U' }}"
+                  alt="{{ product.title }}"
+                  class="w-full h-full object-contain transition-transform duration-300 hover:scale-105 product-image"
+                  data-id="{{ product.id }}"
+          >
+          {% else %}
+          <div class="h-full w-full bg-gray-200 flex items-center justify-center">
+            <span class="text-gray-400"><i class="bi bi-image text-3xl"></i></span>
+          </div>
+          {% endif %}
+        </div>
+        <div class="p-4 flex-grow">
+          <div class="flex justify-between items-center mb-2">
+            <h2 class="text-xl font-bold truncate">{{ product.title }}</h2>
+<!--            {% if product.classification %}-->
+<!--            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{ product.classification.title }}</span>-->
+<!--            {% endif %}-->
+          </div>
+          <div class="mb-4">
+            <p class="text-gray-500 text-sm line-clamp-3">{{ product.desc|truncatechars:100 }}</p>
+          </div>
+          <div class="flex justify-between items-center">
+            <div>
+              <span class="font-bold text-lg text-indigo-600">{{ product.price }} ر.س</span>
+            </div>
+            {% if product.stock %}
+            <div class="text-gray-600">
+              المخزون: <span class="font-medium">{{ product.stock }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="bg-gray-50 border-t border-gray-200 px-4 py-3 flex justify-center">
+          <a href="{% url 'viewProductsSpecific' product.id %}" class="text-indigo-600 hover:text-indigo-800 font-medium">عرض التفاصيل</a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-span-3 p-8 text-center">
+        <p class="text-gray-500 font-medium">لا توجد منتجات متاحة حالياً</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if products.has_other_pages %}
+    <div class="flex justify-center mt-8 mb-12">
+      <div class="inline-flex rounded-md shadow">
+        {% if products.has_previous %}
+        <a href="?page={{ products.previous_page_number }}" class="px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50">
+          السابق
+        </a>
+        {% endif %}
+
+        {% for i in products.paginator.page_range %}
+        {% if products.number == i %}
+        <span class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-gray-300">{{ i }}</span>
+        {% else %}
+        <a href="?page={{ i }}" class="px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-gray-300 hover:bg-gray-50">{{ i }}</a>
+        {% endif %}
+        {% endfor %}
+
+        {% if products.has_next %}
+        <a href="?page={{ products.next_page_number }}" class="px-4 py-2 text-sm font-medium text-indigo-600 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50">
+          التالي
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </section>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const categoryFilter = document.getElementById('categoryFilter');
+    const priceFilter = document.getElementById('priceFilter');
+    const searchInput = document.getElementById('searchInput');
+    const resetButton = document.getElementById('resetFilters');
+    const productCards = document.querySelectorAll('.product-card');
+
+    function filterProducts() {
+      const categoryVal = categoryFilter?.value || '';
+      const priceVal = priceFilter?.value || '';
+      const searchQuery = searchInput?.value.trim().toLowerCase() || '';
+
+      productCards.forEach(card => {
+        const name = card.dataset.name?.toLowerCase() || '';
+        const price = parseFloat(card.dataset.price || 0);
+        const category = card.dataset.category || '';
+
+        const matchCategory = !categoryVal || category === categoryVal;
+
+        let matchPrice = true;
+        if (priceVal === 'low') {
+          matchPrice = price < 50;
+        } else if (priceVal === 'medium') {
+          matchPrice = price >= 50 && price <= 100;
+        } else if (priceVal === 'high') {
+          matchPrice = price > 100;
+        }
+
+        const matchSearch = name.includes(searchQuery);
+
+        if (matchCategory && matchPrice && matchSearch) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    categoryFilter?.addEventListener('change', filterProducts);
+    priceFilter?.addEventListener('change', filterProducts);
+    searchInput?.addEventListener('input', filterProducts);
+
+    resetButton?.addEventListener('click', function() {
+      if (categoryFilter) categoryFilter.value = '';
+      if (priceFilter) priceFilter.value = '';
+      if (searchInput) searchInput.value = '';
+      filterProducts();
+    });
+
+    filterProducts();
+  });
+</script>
+
+{% endblock %}

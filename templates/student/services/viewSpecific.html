@@ -1,0 +1,286 @@
+{% extends "base_student_dashboard.html" %}
+{% load students_tags %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<style>
+  .swiper-button-next,
+  .swiper-button-prev {
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    color: #4a5568;
+    font-size: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    padding: 12px;
+    width: 15px;
+    height: 15px;
+  }
+
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    background-color: #f7fafc;
+    color: #2d3748;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .swiper-button-next:after,
+  .swiper-button-prev:after {
+    font-size: 8px;
+  }
+
+  .feature-list li {
+    position: relative;
+    padding-right: 1.5rem;
+  }
+
+  .feature-list li i {
+    position: absolute;
+    right: 0;
+    top: 0.25rem;
+  }
+  .service-image-container {
+    height: 250px;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .service-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .service-image-container img:hover {
+    transform: scale(1.05);
+  }
+</style>
+
+<div class="bg-indigo-50 min-h-screen py-8">
+  <div class="container mx-auto px-4">
+    <!-- Breadcrumb Navigation -->
+    <div class="mb-6 flex items-center text-sm text-gray-600">
+      <a href="{% url 'studentViewServices' %}" class="hover:text-indigo-600">الخدمات</a>
+      <span class="mx-2">/</span>
+      <span class="text-indigo-600">{{ service.title }}</span>
+    </div>
+
+    <!-- Main Service Details Card -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden mb-10">
+      <div class="flex flex-col md:flex-row">
+
+        <!-- Image Section -->
+        <div class="md:w-1/2 h-64 md:h-auto overflow-hidden">
+          <img src="{{ service.image.url }}" alt="{{ service.title }}"
+               class="w-full h-full object-cover">
+        </div>
+
+        <!-- Service Details Section -->
+        <div class="md:w-1/2 p-6 md:p-8 flex flex-col justify-center">
+          <div class="mb-6">
+            <h1 class="text-3xl font-bold mb-2 text-right text-indigo-800">{{ service.title }}</h1>
+
+            <div class="mb-4">
+              <!--
+              {% if service.classification %}
+              <span class="inline-block bg-indigo-100 text-indigo-800 text-sm font-semibold px-3 py-1 rounded-full">
+                {{ service.classification.title }}
+              </span>
+              {% endif %}
+              -->
+            </div>
+
+            <p class="text-gray-600 mb-6 text-right leading-relaxed">{{ service.desc }}</p>
+          </div>
+
+          <!-- Service Details Table -->
+          <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <div class="grid grid-cols-2 gap-4 text-right">
+              <div>
+                <p class="text-gray-500 text-sm">السعر</p>
+                <p class="font-bold text-xl text-indigo-700">
+                  {% if service.discounted_price %}
+                  <span class="line-through text-gray-500 text-lg mr-2">{{ service.price }} ر.س</span>
+                  {{ service.discounted_price }} ر.س
+                  {% else %}
+                  {{ service.price }} ر.س
+                  {% endif %}
+                </p>
+              </div>
+
+              {% if service.duration %}
+              <div>
+                <p class="text-gray-500 text-sm">المدة</p>
+                <p class="font-bold text-xl text-indigo-700">
+                  {% if service.duration >= 60 %}
+                  ساعة {{ service.duration|floordiv:60 }} {{ service.duration|mod:60 }} دقيقة
+                  {% else %}
+                  {{ service.duration }} دقيقة
+                  {% endif %}
+                </p>
+              </div>
+              {% endif %}
+
+              {% if service.is_enabled != None %}
+              <div>
+                <p class="text-gray-500 text-sm mb-2">الحالة</p>
+                <p class="font-bold">
+                  {% if service.is_enabled %}
+                  <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-sm">متاح</span>
+                  {% else %}
+                  <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-sm">غير متاح</span>
+                  {% endif %}
+                </p>
+              </div>
+              {% endif %}
+
+              <div>
+                <p class="text-gray-500 text-sm">رمز الخدمة</p>
+                <p class="font-bold text-gray-700">{{ service.id }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Booking Section (now correctly placed under the table) -->
+          <div class="mt-4">
+            <div class="flex flex-col sm:flex-row gap-4 items-center">
+<!--              <div class="flex items-center w-full sm:w-auto">-->
+<!--                <label for="sessions" class="text-right text-gray-700 ml-2">عدد الجلسات:</label>-->
+<!--                <select id="sessions" class="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">-->
+<!--                  <option value="1">1</option>-->
+<!--                  <option value="2">2</option>-->
+<!--                  <option value="3">3</option>-->
+<!--                  <option value="4">4</option>-->
+<!--                </select>-->
+<!--              </div>-->
+              <a
+                      href = "{% url 'client_select_appointment_day' %}"
+                      class="w-full sm:w-auto bg-indigo-600 text-white py-3 px-8 rounded-full hover:bg-indigo-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 {% if product.stock == 0 %}opacity-50 cursor-not-allowed{% endif %}"
+              >
+                <i class="fas fa-shopping-cart mr-2"></i>
+                <span>احجزي موعدِك الآن</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Features -->
+<!--          <div class="mb-8 text-right">-->
+<!--            <h3 class="text-lg font-semibold mb-3 text-gray-700">المميزات:</h3>-->
+<!--            <ul class="feature-list space-y-3" dir="rtl">-->
+<!--              <li class="flex items-center gap-2">-->
+<!--                <i class="fas fa-check-circle text-green-500"></i>-->
+<!--                <span>طاقم عمل نسائي محترف وذو خبرة</span>-->
+<!--              </li>-->
+<!--              <li class="flex items-center gap-2">-->
+<!--                <i class="fas fa-check-circle text-green-500"></i>-->
+<!--                <span>استخدام منتجات عالية الجودة وآمنة للبشرة</span>-->
+<!--              </li>-->
+<!--              <li class="flex items-center gap-2">-->
+<!--                <i class="fas fa-check-circle text-green-500"></i>-->
+<!--                <span>أجواء مريحة وخصوصية تامة للعميلات</span>-->
+<!--              </li>-->
+<!--              <li class="flex items-center gap-2">-->
+<!--                <i class="fas fa-check-circle text-green-500"></i>-->
+<!--                <span>حجز مرن ومواعيد تناسب الجميع</span>-->
+<!--              </li>-->
+<!--            </ul>-->
+<!--          </div>-->
+
+
+
+
+
+
+<!--        </div>-->
+<!--      </div>-->
+
+
+    <!-- Related Services -->
+    <div class="mb-10">
+      <h2 class="text-2xl font-bold mb-6 text-right text-indigo-800">خدمات ذات صلة</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
+        {% for related_service in services %}
+        {% if related_service.id != service.id %}
+        <div class="bg-white rounded-lg shadow overflow-hidden service-card hover:shadow-lg transition-shadow duration-300">
+          <div class="p-4 text-center">
+<!--            {% get_Service_imgs related_service.id as imgs %}-->
+<!--            {% if imgs and imgs.0 %}-->
+<!--            <div class="mb-3">-->
+<!--              <img src="{{ imgs.0.img_base64 }}" alt="{{ related_service.title }}" class="h-40 w-full object-cover rounded">-->
+<!--            </div>-->
+<!--            {% else %}-->
+<!--            <div class="mb-3">-->
+<!--              <img src="https://via.placeholder.com/400x300" alt="{{ related_service.title }}" class="h-40 w-full object-cover rounded">-->
+<!--            </div>-->
+<!--            {% endif %}-->
+            {% if related_service.image %}
+            <div class="mb-3 service-image-container">
+              <img src="{{ related_service.image.url }}" alt="{{ related_service.title }}">
+            </div>
+            {% endif %}
+            <h3 class="text-blue-600 text-xl font-bold mb-2">{{ related_service.title }}</h3>
+            <p class="text-gray-600 mb-4 line-clamp-2">{{ related_service.desc }}</p>
+
+            <div class="flex justify-center items-center gap-2 mb-4">
+              <i class="fas fa-coins text-yellow-500"></i>
+              {% if related_service.discounted_price %}
+              <span class="line-through text-gray-500">{{ related_service.price }} ر.س</span>
+              <span class="text-blue-600 font-bold">{{ related_service.discounted_price }} ر.س</span>
+              {% else %}
+              <span>{{ related_service.price }} ر.س</span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="bg-indigo-600 hover:bg-indigo-700 text-white w-full py-2 text-center">
+            <a href="{% url 'viewServicesSpecific' related_service.id %}" class="block w-full h-full text-white">عرض التفاصيل</a>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+  // Initialize Swiper
+  var swiper = new Swiper(".swiper-container", {
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+  });
+
+  // Handle session selection
+  document.getElementById('sessions').addEventListener('change', function() {
+    const basePrice = {{ service.discounted_price|default:service.price }};
+    const sessions = parseInt(this.value);
+    const totalPrice = basePrice * sessions;
+
+    // If you want to update the price display based on number of sessions
+    // Uncomment and implement this
+    /*
+    const priceElement = document.getElementById('total-price');
+    if(priceElement) {
+      priceElement.textContent = totalPrice + ' ر.س';
+    }
+    */
+  });
+</script>
+
+{% endblock %}
