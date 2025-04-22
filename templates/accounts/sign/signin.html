@@ -18,6 +18,11 @@
           </Link>
         </p>
       </div>
+      {% if error %}
+      <div class="bg-red-100 text-red-700 text-center p-2 rounded-md">
+        {{ error }}
+      </div>
+      {% endif %}
       <form class="mt-8 space-y-6" method="post">
         {% csrf_token %}
         <div class="-space-y-px rounded-md shadow-sm">
